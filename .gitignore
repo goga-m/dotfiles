@@ -2,10 +2,15 @@
 
 !/.gitignore
 !/.Xresources
+!/.vimrc
 
 !/.config/
 /.config/*
 
 !/.config/i3/
-!/.config/vifm
+
+!/.config/vifm/*
+!/.config/vifm/colors
+!/.config/vifm/scripts
+
 !/.config/polybar
