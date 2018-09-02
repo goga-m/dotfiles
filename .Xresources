@@ -19,8 +19,15 @@ URxvt.letterSpace: -1
 ! URxvt.font: xft:Monospace:size=9
 URxvt.scrollBar: false
 
-URxvt.font:     xft:bitstream vera sans mono:size=9:antialias=true
-URxvt.boldFont: xft:bitstream vera sans mono:bold:size=9:antialias=true
+URxvt*font: xft:Bitstream Vera Sans Mono:pixelsize=11:antialias=true:hinting=true
+URxvt*boldFont: xft:Bitstream Vera Sans Mono:bold:pixelsize=11:antialias=true:hinting=true
+
+! URxvt*font: xft:Liberation Mono:pixelsize=13:antialias=true:hinting=true
+! URxvt*boldFont: xft:Liberation Mono:bold:pixelsize=13:antialias=true:hinting=true
+! URxvt*font: xft:DejaVu Sans Mono:pixelsize=12:antialias=true:hinting=true
+! URxvt*boldFont: xft:DejaVu Sans Mono:bold:pixelsize=12:antialias=true:hinting=true
+! URxvt.font:     xft:DejaVuSansMono:pixelsize=11:antialias=true
+! URxvt.boldFont: xft:DejaVuSansMono:pixelsize=11:bold:size=9:antialias=true
 ! Colors
 URxvt.background: #262626
 URxvt.foreground: #DEDEDE
@@ -55,6 +62,7 @@ URxvt.color15 : #EEEEEC
 xterm*background: #262626
 xterm*foreground: #DEDEDE
 
+! xterm*faceName: DejaVu Sans Mono:size=9:antialias=true
 xterm*faceName: DejaVu Sans Mono:size=9:antialias=true
 xterm*font: 7x13
 
@@ -67,22 +75,101 @@ XTerm.vt100.saveLines: 4096
 ! XTerm.vt100.scrollbar.width: 8
 !
 ! Copy paste
-Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
+Ctrl Shift <Key>C: copy-selection(CLIPBOARD)
 Ctrl Shift <Key>V: insert-selection(CLIPBOARD)
 
-xterm*color0: rgb:00/00/00
-xterm*color1: rgb:a8/00/00
-xterm*color2: rgb:00/a8/00
-xterm*color3: rgb:a8/54/00
-xterm*color4: rgb:00/00/a8
-xterm*color5: rgb:a8/00/a8
-xterm*color6: rgb:00/a8/a8
-xterm*color7: rgb:a8/a8/a8
-xterm*color8: rgb:54/54/54
-xterm*color9: rgb:fc/54/54
-xterm*color10: rgb:54/fc/54
-xterm*color11: rgb:fc/fc/54
-xterm*color12: rgb:54/54/fc
-xterm*color13: rgb:fc/54/fc
-xterm*color14: rgb:54/fc/fc
-xterm*color15: rgb:fc/fc/fc
+! xterm*color0: rgb:00/00/00
+! xterm*color1: rgb:a8/00/00
+! xterm*color2: rgb:00/a8/00
+! xterm*color3: rgb:a8/54/00
+! xterm*color4: rgb:00/00/a8
+! xterm*color5: rgb:a8/00/a8
+! xterm*color6: rgb:00/a8/a8
+! xterm*color7: rgb:a8/a8/a8
+! xterm*color8: rgb:54/54/54
+! xterm*color9: rgb:fc/54/54
+! xterm*color10: rgb:54/fc/54
+! xterm*color11: rgb:fc/fc/54
+! xterm*color12: rgb:54/54/fc
+! xterm*color13: rgb:fc/54/fc
+! xterm*color14: rgb:54/fc/fc
+! xterm*color15: rgb:fc/fc/fc
+! -----------------------------------------------------------------------------
+! File: gruvbox-dark.xresources
+! Description: Retro groove colorscheme generalized
+! Author: morhetz <morhetz@gmail.com>
+! Source: https://github.com/morhetz/gruvbox-generalized
+! Last Modified: 6 Sep 2014
+! -----------------------------------------------------------------------------
+
+! hard contrast: *background: #1d2021
+*background: #282828
+! soft contrast: *background: #32302f
+*foreground: #ebdbb2
+! Black + DarkGrey
+*color0:  #282828
+*color8:  #928374
+! DarkRed + Red
+*color1:  #cc241d
+*color9:  #fb4934
+! DarkGreen + Green
+*color2:  #98971a
+*color10: #b8bb26
+! DarkYellow + Yellow
+*color3:  #d79921
+*color11: #fabd2f
+! DarkBlue + Blue
+*color4:  #458588
+*color12: #83a598
+! DarkMagenta + Magenta
+*color5:  #b16286
+*color13: #d3869b
+! DarkCyan + Cyan
+*color6:  #689d6a
+*color14: #8ec07c
+! LightGrey + White
+*color7:  #a89984
+*color15: #ebdbb2
+
+! ! special
+! *.foreground:   #c5c8c6
+! *.background:   #1d1f21
+! *.cursorColor:  #c5c8c6
+!
+! ! black
+! *.color0:       #282a2e
+! *.color8:       #373b41
+!
+! ! red
+! *.color1:       #a54242
+! *.color9:       #cc6666
+!
+! ! green
+! *.color2:       #8c9440
+! *.color10:      #b5bd68
+!
+! ! yellow
+! *.color3:       #de935f
+! *.color11:      #f0c674
+!
+! ! blue
+! *.color4:       #5f819d
+! *.color12:      #81a2be
+!
+! ! magenta
+! *.color5:       #85678f
+! *.color13:      #b294bb
+!
+! ! cyan
+! *.color6:       #5e8d87
+! *.color14:      #8abeb7
+!
+! ! white
+! *.color7:       #707880
+! *.color15:      #c5c8c6
+
+
+! Copy paste
+xterm*VT100.Translations: #override \
+                 Ctrl Shift <Key>V:    insert-selection(CLIPBOARD) \n\
+                 Ctrl Shift <Key>C:    copy-selection(CLIPBOARD)
