@@ -5,5 +5,7 @@
 
 !/.config/
 /.config/*
+
 !/.config/i3/
 !/.config/vifm
+!/.config/polybar
