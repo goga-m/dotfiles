@@ -1,5 +1,8 @@
-* 
-/*/
-!.gitignore
-!.Xresources
-!/.config/i3/config
+/*
+
+!/.gitignore
+!/.Xresources
+
+!/.config/
+/.config/*
+!/.config/i3/
