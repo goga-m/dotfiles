@@ -19,6 +19,12 @@ set smarttab
 set nobackup
 set nowritebackup
 
+" Auto read file changes
+set autoread
+
+" Enable mouse
+set mouse=a
+
 " Automatically change the directory when opening file
 " set autochdir
 
@@ -73,6 +79,9 @@ inoremap jj  <esc>
 " " let vimsyn_folding='af'       " Vim script
 " let xml_syntax_folding=1      " XML
 
+" Disable identation on promise chains
+let g:javascript_opfirst = 1
+
 " inoremap <F9> <C-O>za
 " nnoremap <F9> za
 " onoremap <F9> <C-C>za
@@ -110,6 +119,7 @@ Plugin 'VundleVim/Vundle.vim'
 
 " Nerdtree
 Plugin 'scrooloose/nerdtree'
+" autocmd VimEnter * NERDTree
 
 " Synctonize nerdTree with opened file
 Plugin 'unkiwii/vim-nerdtree-sync'
@@ -150,7 +160,7 @@ Plugin 'Valloric/YouCompleteMe'
 " Plugin 'Raimondi/delimitMate'
 
 " Track the engine.
-Plugin 'SirVer/ultisnips'
+" Plugin 'SirVer/ultisnips'
 
 " Snippets are separated from the engine. Add this if you want them:
 " Plugin 'honza/vim-snippets'
@@ -174,14 +184,14 @@ Plugin 'morhetz/gruvbox'
 Plugin  'christoomey/vim-tmux-navigator'
 
 " Airline plugin 
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
+" Plugin 'vim-airline/vim-airline'
+" Plugin 'vim-airline/vim-airline-themes'
 let g:airline#extensions#tabline#enabled = 0
 " let g:airline#extensions#tabline#left_sep = ' '
 " let g:airline#extensions#tabline#left_alt_sep = '|'
 
 " Git Plugin for sublime
-Plugin 'tpope/vim-fugitive'
+" Plugin 'tpope/vim-fugitive'
 " Git Plugin to work well with nerdtree
 " Plugin 'Xuyuanp/nerdtree-git-plugin'
 " Plugin 'gregsexton/gitv'
@@ -201,8 +211,8 @@ Plugin 'jiangmiao/auto-pairs'
 " Plugin 'wookiehangover/jshint.vim'
 
 " Vim-Solidity
-Plugin 'tomlion/vim-solidity'
-autocmd BufNewFile,BufRead *.sol   set syntax=solidity
+" Plugin 'tomlion/vim-solidity'
+" autocmd BufNewFile,BufRead *.sol   set syntax=solidity
 
 " Close html tag
 Plugin 'alvan/vim-closetag'
@@ -233,46 +243,10 @@ let g:ale_fixers = {
 \}
 let g:ale_fix_on_save = 1
 " autocmd bufwritepost *.js silent !standard --fix %
-set autoread
 
-" Polyglot
-" A collection of language packs for Vim.
-" Plugin 'vim-polyglot'
-
-" Synastic
-" Plugin 'vim-syntastic/syntastic'
-" let g:syntastic_error_symbol = "✗"
-" let g:syntastic_warning_symbol = "-"
-" Vim autoformat
-" Plugin 'Chiel92/vim-autoformat'
-" let g:autoformat_verbosemode=1
-" let g:formatdef_eslint_local='"eslint'
-" Vim xo - javascript style linter
-" Plugin 'sindresorhus/vim-xo'
-" let g:syntastic_javascript_checkers = ['xo']
-" let g:syntastic_javascript_checkers = ['standard', 'eslint']
-" let g:syntastic_javascript_standard_exec = "/usr/local/bin/standard"
-" let g:syntastic_javascript_eslint_exec = "/usr/local/bin/eslint"
-" autocmd bufwritepost *.js silent !standard % --format > /dev/null
-" set autoread
 " Elm plugin for vim
 Plugin 'ElmCast/elm-vim'
 autocmd BufNewFile,BufRead *.elm set filetype=elm
-
-" Plugin 'elmcast/elm-vim'
-" Elm you complete me intergration
-" let g:ycm_semantic_triggers = {
-"      \ 'elm' : ['.'],
-"      \}
-
-" Startify plugin for vim, to keep sessions and a starter screen
-" Plugin 'mhinz/vim-startify'
-
-" Denite is a dark powered plugin for Neovim/Vim to unite all interfaces. 
-" It can replace many features or plugins with its interface. 
-" It is like a fuzzy finder, but is more generic. 
-" You can extend the interface and create the sources.
-" Plugin 'Shougo/denite.nvim'
 
 " Powerline is a statusline plugin for vim, 
 " and provides statuslines and prompts for several other applications, 
@@ -286,14 +260,8 @@ let g:qfenter_keymap.vopen = ['<C-v>']
 let g:qfenter_keymap.hopen = ['<C-CR>', '<C-i>']
 let g:qfenter_keymap.topen = ['<C-t>']
 
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<c-g>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-" If you want :UltiSnipsEdit to split your window.
-let g:UltiSnipsEditSplit="vertical"
-
 set autoindent
+set copyindent
 filetype plugin indent on    " required
 
 " commenting json as javascript
@@ -301,9 +269,8 @@ filetype plugin indent on    " required
 autocmd BufNewFile,BufRead *.json set ft=javascript
 autocmd BufNewFile,BufRead *.mjs set ft=javascript
 
-Plugin 'cohama/agit.vim'
-
-Plugin 'junegunn/gv.vim'
+" Plugin 'cohama/agit.vim'
+" Plugin 'junegunn/gv.vim'
 
 
 " A vim plugin that simplifies the transition between multiline and single-line code. 
@@ -317,6 +284,30 @@ Plugin 'andrewradev/splitjoin.vim'
 " It effectively turns your default register into a stack, and lets you 
 " cycle through the items in the stack after doing a paste.
 Plugin 'maxbrunsfeld/vim-yankstack'
+
+" A Vim plugin that always highlights the enclosing html/xml tags
+" Plugin 'Valloric/MatchTagAlways'
+" nnoremap T :MtaJumpToOtherTag<cr>
+" vnoremap T :MtaJumpToOtherTag<cr>
+" let g:mta_use_matchparen_group = 1
+Plugin 'andymass/vim-matchup'
+" Highlight surrounding match
+nmap <silent> <F7> <plug>(matchup-hi-surround)
+let g:matchup_matchparen_deferred = 1
+let g:loaded_matchit = 1
+
+" With Wildfire you can quickly select the closest text object among a group of candidates. 
+" By default candidates are i', i", i), i], i}, ip and it.
+Plugin 'gcmt/wildfire.vim'
+
+" This plugin provides text object mappings ib and ab.
+"
+" ** ib is a union of i(, i{, i[, i', i" and i<.
+" ** ab is a union of a(, a{, a[, a', a" and a<.
+"
+Plugin 'kana/vim-textobj-user'
+Plugin 'rhysd/vim-textobj-anyblock'
+
 
 " beautify
 " autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
@@ -366,7 +357,7 @@ set tabstop=4       " The width of a TAB is set to 4.
                     " Still it is a \t. It is just that
                     " Vim will interpret it to be having
                     " a width of 4.
-set shiftwidth=2    " Indents will have a width of 4
+set shiftwidth=2    " Indents will have a width of 2
 set softtabstop=2   " Sets the number of columns for a TAB
 
 set binary
@@ -391,8 +382,6 @@ nnoremap <silent> <A-l> <C-w>>
 
 
 
-" Airline theme selection
-" let g:airline_theme='simple'
 set t_Co=256
 set background=dark
 colorscheme gruvbox
@@ -437,7 +426,7 @@ nnoremap <C-f> :AckFile!
 
 
 " To ignore plugin indent changes, instead use:
-"filetype plugin on
+filetype plugin on
 "
 " Brief help
 " :PluginList       - lists configured plugins
@@ -447,3 +436,7 @@ nnoremap <C-f> :AckFile!
 "
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
+"
+command! ProfileMe :profile start ~/.vim/profile.log <bar> profile func * <bar> profile file *
+command! ProfileStop :profile pause
+command! ProfileView :e ~/.vim/profile.log
