@@ -67,8 +67,8 @@ xterm*faceName: DejaVu Sans Mono:size=9:antialias=true
 xterm*font: 7x13
 
 ! Fix the backspace key
-XTerm.vt100.backarrowKey: false
-XTerm.ttyModes: erase ^?
+! XTerm.vt100.backarrowKey: false
+! XTerm.ttyModes: erase ^?
 ! Scrolling
 XTerm.vt100.saveLines: 4096
 ! XTerm.vt100.scrollBar: true
