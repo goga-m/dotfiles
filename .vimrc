@@ -18,6 +18,7 @@ set smarttab
 " Disable Swap files
 set nobackup
 set nowritebackup
+set encoding=utf-8
 
 " Auto read file changes
 set autoread
@@ -168,7 +169,7 @@ Plugin 'Valloric/YouCompleteMe'
 Plugin 'isRuslan/vim-es6'
 
 " Full path fuzzy file, buffer, mru, tag, ... finder for Vim.
-" Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
 
 " Search inside files
 Plugin 'mileszs/ack.vim'
@@ -184,17 +185,27 @@ Plugin 'morhetz/gruvbox'
 Plugin  'christoomey/vim-tmux-navigator'
 
 " Airline plugin 
-" Plugin 'vim-airline/vim-airline'
-" Plugin 'vim-airline/vim-airline-themes'
-let g:airline#extensions#tabline#enabled = 0
-" let g:airline#extensions#tabline#left_sep = ' '
-" let g:airline#extensions#tabline#left_alt_sep = '|'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_theme='term'
+" air-line
+let g:airline_symbols_ascii = 1
 
-" Git Plugin for sublime
-" Plugin 'tpope/vim-fugitive'
-" Git Plugin to work well with nerdtree
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+" airline symbols
+let g:airline_left_sep = '▶'
+let g:airline_left_alt_sep = '◀'
+let g:airline_right_sep = '◀'
+let g:airline_right_alt_sep = '◀'
+let g:airline_symbols.branch = '^'
+let g:airline_symbols.readonly = '-'
+let g:airline_symbols.linenr = '-'
+
 " Plugin 'Xuyuanp/nerdtree-git-plugin'
-" Plugin 'gregsexton/gitv'
 
 " Plugin to navigate through node modules
 Plugin 'moll/vim-node'
@@ -248,11 +259,6 @@ let g:ale_fix_on_save = 1
 Plugin 'ElmCast/elm-vim'
 autocmd BufNewFile,BufRead *.elm set filetype=elm
 
-" Powerline is a statusline plugin for vim, 
-" and provides statuslines and prompts for several other applications, 
-" including zsh, bash, fish, tmux, IPython, Awesome, i3 and Qtile.
-Plugin 'powerline/powerline' 
-
 " QFEnter allows you to open items from Vim's quickfix or location list wherever you wish.
 Plugin 'yssl/QFEnter'
 let g:qfenter_keymap = {}
@@ -293,8 +299,9 @@ Plugin 'maxbrunsfeld/vim-yankstack'
 Plugin 'andymass/vim-matchup'
 " Highlight surrounding match
 nmap <silent> <F7> <plug>(matchup-hi-surround)
-let g:matchup_matchparen_deferred = 1
-let g:loaded_matchit = 1
+let g:matchup_matchparen_deferred = 0
+let g:loaded_matchit = 0
+let g:matchup_matchparen_status_offscreen = 0
 
 " With Wildfire you can quickly select the closest text object among a group of candidates. 
 " By default candidates are i', i", i), i], i}, ip and it.
@@ -309,23 +316,6 @@ Plugin 'kana/vim-textobj-user'
 Plugin 'rhysd/vim-textobj-anyblock'
 
 
-" beautify
-" autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
-" autocmd FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
-" autocmd FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
-" autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
-" autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
-" autocmd FileType vue noremap <buffer> <c-f> :call HtmlBeautify()<cr>
-"
-"
-"
-" autocmd FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
-" autocmd FileType json vnoremap <buffer> <c-f> :call RangeJsonBeautify()<cr>
-" autocmd FileType jsx vnoremap <buffer> <c-f> :call RangeJsxBeautify()<cr>
-" autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
-" autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
-" autocmd FileType vue vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
-" prevent youcompleteme errors
 let g:ycm_path_to_python_interpreter="/usr/bin/python2.7"
 
 " nicely break lines while {} is inserter
@@ -395,35 +385,10 @@ set clipboard=unnamedplus
 nnoremap <C-g> :Ack! 
 nnoremap <C-f> :AckFile! 
 
-
-" Status line
-" function! GitBranch()
-"   return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-" endfunction
-"
-" function! StatuslineGit()
-"   let l:branchname = GitBranch()
-"   return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
-" endfunction
-"
-" set statusline=
-" set statusline+=%#PmenuSel#
-" set statusline+=%{StatuslineGit()}
-" set statusline+=%#LineNr#
-" set statusline+=\ %f
-" set statusline+=%m\
-" set statusline+=%=
-" set statusline+=%#CursorColumn#
-" set statusline+=\ %y
-" set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
-" set statusline+=\[%{&fileformat}\]
-" set statusline+=\ %p%%
-" set statusline+=\ %l:%c
-" set statusline+=\ 
-
-" On enter click, select the highlighted item on autocompletion dropdown
-" inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
+" Buffers
+:nnoremap <Tab> :bnext<CR>
+:nnoremap <S-Tab> :bprevious<CR>
+:nnoremap <C-X> :bdelete<CR>
 
 " To ignore plugin indent changes, instead use:
 filetype plugin on
