@@ -20,6 +20,9 @@ set nobackup
 set nowritebackup
 set encoding=utf-8
 
+" Faster redrawing on terminal
+set ttyfast
+
 " Auto read file changes
 set autoread
 
