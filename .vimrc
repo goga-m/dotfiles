@@ -248,11 +248,12 @@ autocmd BufEnter * :syntax sync fromstart
 let g:vue_disable_pre_processors=1
 
 " Ale
-Plugin 'w0rp/ale'
-let g:ale_fixers = {
-\   'javascript': ['standard', 'eslint'],
-\}
+Plugin 'dense-analysis/ale'
+
+let g:ale_fixers = { 'javascript': ['standard', 'eslint']}
+let g:ale_lint_on_save = 1
 let g:ale_fix_on_save = 1
+
 " autocmd bufwritepost *.js silent !standard --fix %
 
 " Elm plugin for vim
