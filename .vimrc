@@ -173,6 +173,8 @@ Plugin 'isRuslan/vim-es6'
 
 " Full path fuzzy file, buffer, mru, tag, ... finder for Vim.
 Plugin 'ctrlpvim/ctrlp.vim'
+let g:ctrlp_custom_ignore = 'node_modules\|git'
+let g:ctrlp_working_path_mode = 0
 
 " Search inside files
 Plugin 'mileszs/ack.vim'
@@ -390,9 +392,9 @@ nnoremap <C-g> :Ack!
 nnoremap <C-f> :AckFile! 
 
 " Buffers
-:nnoremap <Tab> :bnext<CR>
-:nnoremap <S-Tab> :bprevious<CR>
-:nnoremap <C-X> :bdelete<CR>
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+nnoremap <C-X> :bdelete<CR>
 
 " To ignore plugin indent changes, instead use:
 filetype plugin on
