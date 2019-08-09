@@ -400,7 +400,8 @@ nnoremap w :view<cr>
 vnoremap w :view<cr>gv
 
 " Open file in existing instance of gvim
-nnoremap o :!gvim --remote-tab-silent %f<cr>
+nnoremap o :!vim --servername one --remote %f
+
 " Open file in new instance of gvim
 nnoremap O :!gvim %f<cr>
 
@@ -471,4 +472,3 @@ filetype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm,*.svg,*.ico feh %f 2>/dev/null &
 filetype *.md5 md5sum -c %f
 
 command! extractfiles :execute '!%%n extract-files' &fusehome expand('%%D') expand('%%f:p')
-
