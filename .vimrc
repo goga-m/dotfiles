@@ -80,7 +80,7 @@ inoremap jj  <esc>
 " let r_syntax_folding=1        " R
 " let ruby_fold=1               " Ruby
 " let sh_fold_enabled=1         " sh
-" " let vimsyn_folding='af'       " Vim script
+" let vimsyn_folding='af'       " Vim script
 " let xml_syntax_folding=1      " XML
 
 " Disable identation on promise chains
@@ -254,10 +254,11 @@ let g:vue_disable_pre_processors=1
 
 " Ale
 Plugin 'dense-analysis/ale'
-
+"
 let g:ale_fixers = { 'javascript': ['standard', 'eslint']}
 let g:ale_lint_on_save = 1
 let g:ale_fix_on_save = 1
+let g:ale_enabled = 0
 
 " autocmd bufwritepost *.js silent !standard --fix %
 
@@ -320,6 +321,10 @@ Plugin 'gcmt/wildfire.vim'
 "
 Plugin 'kana/vim-textobj-user'
 Plugin 'rhysd/vim-textobj-anyblock'
+
+
+" A Vim plugin for Livedown.
+Plugin 'shime/vim-livedown'
 
 
 let g:ycm_path_to_python_interpreter="/usr/bin/python2.7"
