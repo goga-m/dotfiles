@@ -19,8 +19,8 @@ secondary = #e60053
 alert = #bd2c40
 
 [bar/standard]
+; When not specifying monitor, it doesn't throw error for uknown monitor
 ;monitor = ${env:MONITOR:HDMI-1}
-monitor = eDP1
 width = 100%
 height = 27
 ;offset-x = 1%
@@ -257,7 +257,7 @@ format-underline = #0a6cf5
 label = %date% %time%
 
 [module/volume]
-type = internal/volume
+type = internal/alsa
 
 format-volume = <label-volume> <bar-volume>
 label-volume = VOL
@@ -321,8 +321,8 @@ format-underline = #f50a4d
 format-warn = <ramp> <label-warn>
 format-warn-underline = ${self.format-underline}
 
-label = %temperature%
-label-warn = %temperature%
+label = %temperature-c%
+label-warn = %temperature-c%
 label-warn-foreground = ${colors.secondary}
 
 ramp-0 = 
