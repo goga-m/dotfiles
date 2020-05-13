@@ -5,13 +5,12 @@ set showbreak=+++
 set textwidth=200
 set showmatch
 set visualbell
- 
+
 set hlsearch
 set smartcase
 set ignorecase
 set incsearch
- 
-set autoindent
+
 set expandtab
 set smarttab
 
@@ -54,7 +53,7 @@ set nowrap
 
 " Advanced
 set ruler
- 
+
 set undolevels=2000
 set backspace=indent,eol,start
 
@@ -69,6 +68,8 @@ set nocompatible              " be iMproved, required
 
 inoremap jj  <esc>
 
+" Correcting bad indent while pasting with zp :-)
+nnoremap zp p=`] 
 " Code folding
 
 " set foldmethod=syntax
@@ -109,6 +110,13 @@ nnoremap * *<c-o>
 
 filetype on                  " required
 syntax on
+
+set copyindent
+set autoindent
+filetype plugin indent on    " required
+
+" Indent all file and return to position
+noremap <silent> <F5> m8gg=G`8
 
 " Vundle & Plugins configuration
 " set the runtime path to include Vundle and initialize
@@ -164,10 +172,16 @@ Plugin 'Valloric/YouCompleteMe'
 " Plugin 'Raimondi/delimitMate'
 
 " Track the engine.
-" Plugin 'SirVer/ultisnips'
+Plugin 'SirVer/ultisnips'
+let g:UltiSnipsExpandTrigger='<C-Enter>'
+
+if !exists("g:UltiSnipsJumpForwardTrigger")
+  let g:UltiSnipsJumpForwardTrigger = "<C-j>"
+endif
 
 " Snippets are separated from the engine. Add this if you want them:
-" Plugin 'honza/vim-snippets'
+Plugin 'honza/vim-snippets'
+
 " es6 Snippets
 Plugin 'isRuslan/vim-es6'
 
@@ -198,7 +212,7 @@ let g:airline_theme='term'
 let g:airline_symbols_ascii = 1
 
 if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
+  let g:airline_symbols = {}
 endif
 
 " airline symbols
@@ -233,7 +247,7 @@ Plugin 'jiangmiao/auto-pairs'
 " Close html tag
 Plugin 'alvan/vim-closetag'
 " filenames like *.xml, *.html, *.xhtml, ...
-let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.vue"
+let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.vue, *.blade.php"
 
 " Syntax highlighting for vim
 Plugin 'posva/vim-vue'
@@ -272,10 +286,6 @@ let g:qfenter_keymap = {}
 let g:qfenter_keymap.vopen = ['<C-v>']
 let g:qfenter_keymap.hopen = ['<C-CR>', '<C-i>']
 let g:qfenter_keymap.topen = ['<C-t>']
-
-set autoindent
-set copyindent
-filetype plugin indent on    " required
 
 " commenting json as javascript
 " see  @http://www.codeography.com/2010/07/13/json-syntax-highlighting-in-vim.html
@@ -318,16 +328,43 @@ Plugin 'gcmt/wildfire.vim'
 "
 " ** ib is a union of i(, i{, i[, i', i" and i<.
 " ** ab is a union of a(, a{, a[, a', a" and a<.
-"
+
 Plugin 'kana/vim-textobj-user'
 Plugin 'rhysd/vim-textobj-anyblock'
 
+" This vim plugin provides two text objects: ax and ix.
+" They represent XML/HTML attributes.
+Plugin 'whatyouhide/vim-textobj-xmlattr'
+
+" PHP syntax
+Plugin 'stanangeloff/php.vim'
+
+" PHP Blade templates
+Plugin 'jwalton512/vim-blade'
+" Define some single Blade directives. This variable is used for highlighting only.
+let g:blade_custom_directives = ['datetime', 'javascript']
+
+" Define pairs of Blade directives. This variable is used for highlighting and indentation.
+let g:blade_custom_directives_pairs = {
+      \   'markdown': 'endmarkdown',
+      \   'cache': 'endcache',
+      \ }
+
+autocmd BufRead,BufNewFile *.blade.php set filetype=blade
 
 " A Vim plugin for Livedown.
 Plugin 'shime/vim-livedown'
 
+" Fugitive
+Plugin 'tpope/vim-fugitive'
 
-let g:ycm_path_to_python_interpreter="/usr/bin/python2.7"
+" Automatically generate PHPdoc comments
+" PHPdoc is an imitation of JAVAdoc. 
+" The syntax between the two languages is very close.
+Plugin 'moznion/jcommenter.vim'
+command! Phpdoc :call JCommentWriter()
+
+let g:ycm_path_to_python_interpreter="/usr/bin/python3.7"
 
 " nicely break lines while {} is inserter
 "BreakLine: Return TRUE if in the middle of {} or () in INSERT mode
@@ -346,8 +383,8 @@ inoremap <expr> <CR> BreakLine() ? "<CR><ESC>O" : "<CR>"
 
 " Css omnicomplete autocompletion while writing
 let g:ycm_semantic_triggers = {
-    \   'css': [ 're!^\s{4}', 're!:\s+' ],
-    \ }
+      \   'css': [ 're!^\s{4}', 're!:\s+' ],
+      \ }
 "Set html autocomplete on
 set omnifunc=htmlcomplete#CompleteTags
 
@@ -355,9 +392,9 @@ set omnifunc=htmlcomplete#CompleteTags
 
 
 set tabstop=4       " The width of a TAB is set to 4.
-                    " Still it is a \t. It is just that
-                    " Vim will interpret it to be having
-                    " a width of 4.
+" Still it is a \t. It is just that
+" Vim will interpret it to be having
+" a width of 4.
 set shiftwidth=2    " Indents will have a width of 2
 set softtabstop=2   " Sets the number of columns for a TAB
 
