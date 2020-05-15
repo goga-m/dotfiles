@@ -472,3 +472,5 @@ filetype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm,*.svg,*.ico feh %f 2>/dev/null &
 filetype *.md5 md5sum -c %f
 
 command! extractfiles :execute '!%%n extract-files' &fusehome expand('%%D') expand('%%f:p')
+
+source ~/temp/vifm_devicons/SETUP

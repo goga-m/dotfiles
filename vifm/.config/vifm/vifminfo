@@ -1,0 +1,172 @@
+# You can edit this file by hand, but it's recommended not to do that.
+
+# Marks:
+'H
+	/home/goga/
+	..
+1589577787
+'b
+	/home/goga/bin/
+	..
+1589577787
+'h
+	/home/goga/
+	..
+1589577787
+'z
+	/home/goga/.config/vifm
+	..
+1589577787
+
+# Bookmarks:
+
+# TUI:
+al
+q0
+v2
+ov
+m-1
+l2
+r2
+
+# Left window history (oldest to newest):
+d/home/goga/.dotfiles
+	termite
+5
+d/home/goga/.dotfiles/termite
+	..
+0
+d/home/goga/.dotfiles
+	X
+2
+d/home/goga/.dotfiles/X
+	..
+0
+d/home/goga/.dotfiles
+	vifm
+7
+d/home/goga/.dotfiles/vifm
+	.config
+1
+d/home/goga/.dotfiles/vifm/.config
+	vifm
+1
+d/home/goga/.dotfiles/vifm/.config/vifm
+	colors
+1
+d/home/goga/.dotfiles/vifm/.config/vifm/colors
+	ChangeLog
+3
+d/home/goga/.dotfiles/vifm/.config/vifm
+	colors
+1
+d/home/goga/.dotfiles/vifm/.config/vifm/colors
+	Default.vifm
+4
+d/home/goga/.dotfiles/vifm/.config/vifm
+	colors
+1
+d/home/goga/.dotfiles/vifm/.config
+	vifm
+1
+d/home/goga/.dotfiles/vifm
+	.config
+1
+d/home/goga/.dotfiles
+	vifm
+7
+d/home/goga
+	.config
+4
+d/home/goga/.config
+	vifm
+39
+d/home/goga/.config/vifm
+	colors
+1
+d/home/goga/.config/vifm/colors
+	..
+0
+d/home/goga/.config/vifm
+	colors
+1
+d/home/goga/.config/vifm/colors
+	Default.vifm
+1
+d/home/goga/.config/vifm
+	scripts
+2
+d/home/goga/.config/vifm/scripts
+	README
+1
+d/home/goga/.config/vifm
+	vifm-help.txt
+3
+d/home/goga/.config
+	vifm
+38
+d/home/goga/.config/vifm
+	colors
+1
+d/home/goga/.config/vifm/colors
+	Default.vifm
+4
+d/home/goga/.config/vifm
+	scripts
+2
+d/home/goga/.config/vifm/scripts
+	README
+1
+d/home/goga/.config/vifm
+	scripts
+2
+d/home/goga/.config
+	vifm
+38
+d/home/goga/.config/vifm
+	colors
+1
+d/home/goga/.config
+	vifm
+38
+d/home/goga/.config/vifm
+	vifmrc
+4
+d
+
+# Right window history (oldest to newest):
+D/home/goga/.dotfiles
+	..
+0
+D
+
+# Command line history (oldest to newest):
+:q
+
+# Search history (oldest to newest):
+/.config
+/vifm
+
+# Prompt history (oldest to newest):
+
+# Local filter history (oldest to newest):
+
+# Registers:
+""/home/goga/.local/share/vifm/Trash/000_vifm
+
+# Directory stack (oldest to newest):
+
+# Trash content:
+t/home/goga/.local/share/vifm/Trash/000_vifm
+	/home/goga/.config/vifm
+
+# State:
+f
+i1
+[.0
+[F
+F
+I1
+].1
+]F
+s0
