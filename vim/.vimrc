@@ -109,7 +109,8 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 exec 'source' path . '/.vim/coc.vim'
 exec 'source' path . '/.vim/coc-snippets.vim'
 
-" The Silver Searcher
+" fzf fuzzy finder.
+" Fast search inside files, filenames, history...
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
