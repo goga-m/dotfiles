@@ -87,7 +87,7 @@ set so=10
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
         \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 " User the full paths of the sources.
@@ -110,7 +110,7 @@ Plug 'tomtom/tcomment_vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " coc.nvim estensions
-let g:coc_global_extensions = ['coc-marketplace', 'coc-explorer', 'coc-json', 'coc-lists', 'coc-snippets', 'coc-tsserver']
+let g:coc_global_extensions = ['coc-marketplace', 'coc-explorer', 'coc-json', 'coc-lists', 'coc-snippets', 'coc-tsserver', 'coc-prettier', 'coc-vetur']
 
 
 " Works with symlinks
