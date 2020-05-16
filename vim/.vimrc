@@ -308,7 +308,14 @@ command! ProfileView :e ~/.vim/profile.log
 " Apply colors on all terminals
 set t_Co=256
 set background=dark
-colorscheme gruvbox
+
+" Use gruvbox colorsheme. 
+" Fallback to default if gruvbox is not installed.
+try
+  colorscheme gruvbox
+catch /^Vim\%((\a\+)\)\=:E185/
+  colorscheme default
+endtry
 
 " Display line numbers on the left.
 set number
