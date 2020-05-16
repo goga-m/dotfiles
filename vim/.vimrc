@@ -153,6 +153,15 @@ let g:airline_theme='dark'
 " Allows to highlight js code in <script> and css in <style>
 Plug 'posva/vim-vue'
 
+
+" Tig explorer inside vim. Use Tig as a git client.
+"
+" * Seamless switching between Vim and Tig
+" * Adding buffer in the same process not a child of Tig process.
+" * Open files in tabs or in vertically/horizontal split windows on Vim from Tig
+" * Dynamically defining keymaps on Tig
+Plug 'iberianpig/tig-explorer.vim'
+
 call plug#end()
 
 
