@@ -150,12 +150,6 @@ Plug 'gcmt/wildfire.vim'
 Plug 'vim-airline/vim-airline'
 exec 'source' path . '/.vim_plugins/vim-airline.vim'
 
-" Vim syntax highlighting for Vue components.
-" Works best for vue inline component.
-" Allows to highlight js code in <script> and css in <style>
-Plug 'posva/vim-vue'
-
-
 " Tig explorer inside vim. Use Tig as a git client.
 "
 " * Seamless switching between Vim and Tig
