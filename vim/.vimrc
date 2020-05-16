@@ -164,6 +164,12 @@ Plug 'posva/vim-vue'
 " * Dynamically defining keymaps on Tig
 Plug 'iberianpig/tig-explorer.vim'
 
+" Surround.vim is about surroundings: 
+" parentheses, brackets, quotes, XML tags, and more. 
+" The plugin provides mappings to easily delete,
+" change and add such surroundings in pairs.
+Plug 'tpope/vim-surround'
+
 call plug#end()
 
 
