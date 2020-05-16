@@ -1,0 +1,11 @@
+{
+  "suggest.noselect": false,
+  "suggest.snippetIndicator": "►",
+  "vetur.format.defaultFormatter.js": "prettier-eslint",
+  "vetur.useWorkspaceDependencies": true,
+  "vetur.format.defaultFormatter.html": "js-beautify-html",
+  "explorer.icon.enableNerdfont": true,
+  "explorer.width": 50,
+  "prettier.eslintIntegration": true,
+  "prettier.stylelintIntegration": true
+}
