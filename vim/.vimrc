@@ -129,11 +129,6 @@ Plug 'jiangmiao/auto-pairs'
 "  * gJ to join a block into a single-line statement.
 Plug 'andrewradev/splitjoin.vim'
 
-" Close html tag
-Plug 'alvan/vim-closetag'
-" filenames like *.xml, *.html, *.xhtml, ...
-let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.vue, *.blade.php"
-
 " A Vim plugin for Livedown.
 " Preview live while editing markdown files.
 Plug 'shime/vim-livedown'
