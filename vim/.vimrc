@@ -97,7 +97,6 @@ let path = expand('<sfile>:p:h')
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
 
-
 " Gruvbox colorscheme
 Plug 'morhetz/gruvbox'
 
@@ -106,7 +105,13 @@ Plug 'morhetz/gruvbox'
 Plug 'tomtom/tcomment_vim'
 
 " Coc is an intellisense engine for Vim/Neovim.
+"
+
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" coc.nvim estensions
+let g:coc_global_extensions = ['coc-marketplace', 'coc-explorer', 'coc-json', 'coc-lists', 'coc-snippets', 'coc-tsserver']
+
 
 " Works with symlinks
 exec 'source' path . '/.vim_plugins/coc.vim'
