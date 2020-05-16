@@ -1,6 +1,10 @@
 {
+  "coc.preferences.formatOnInsertLeave": true,
+  "coc.preferences.formatOnType": true,
   "suggest.noselect": false,
   "suggest.snippetIndicator": "►",
   "explorer.icon.enableNerdfont": true,
-  "explorer.width": 50
+  "explorer.width": 50,
+  "prettier.disableLanguages": [],
+  "prettier.eslintIntegration": true
 }
