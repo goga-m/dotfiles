@@ -89,6 +89,8 @@ if empty(glob('~/.vim/autoload/plug.vim'))
         \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   "  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+" User the full paths of the sources.
+let path = expand('<sfile>:p:h')
 
 " Specify a directory for plugins
 " - Avoid using standard Vim directory names like 'plugin'
@@ -106,15 +108,14 @@ Plug 'tomtom/tcomment_vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Works with symlinks
-exec 'source' path . '/.vim/coc.vim'
-exec 'source' path . '/.vim/coc-snippets.vim'
+exec 'source' path . '/.vim_plugins/coc.vim'
+exec 'source' path . '/.vim_plugins/coc-snippets.vim'
+exec 'source' path . '/.vim_plugins/coc-explorer.vim'
 
 " fzf fuzzy finder.
 " Fast search inside files, filenames, history...
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-
-
 
 " Plugin to autoclose quotes,parens,brackets etc.
 " Works well with close tag to prevent closing < tag and let
@@ -141,8 +142,7 @@ Plug 'gcmt/wildfire.vim'
 
 " Light tabline for vim.
 Plug 'vim-airline/vim-airline'
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_theme='dark'
+exec 'source' path . '/.vim_plugins/vim-airline.vim'
 
 " Vim syntax highlighting for Vue components.
 " Works best for vue inline component.
