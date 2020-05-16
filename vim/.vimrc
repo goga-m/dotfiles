@@ -166,6 +166,9 @@ Plug 'tpope/vim-surround'
 
 call plug#end()
 
+" Add javascript syntax highlight in .vue files (<script> region)
+exec 'source' path . '/.vim_plugins/custom_syntax_in_range.vim'
+autocmd BufNewFile,BufRead *.vue call SetSyntaxInRange('javascript' ,'<script>' ,'</script>', 'SpecialComment')
 
 "------------------------------------------------------------
 " Usability options {{{1
