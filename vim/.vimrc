@@ -105,19 +105,9 @@ Plug 'tomtom/tcomment_vim'
 " Coc is an intellisense engine for Vim/Neovim.
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" User the full paths of the sources.
 " Works with symlinks
-let path = expand('<sfile>:p:h')
-exec 'source' path . '/plugins/coc.vim'
-exec 'source' path . '/plugins/coc-snippets.vim'
-
-" coc-explorer Use preset argument to open it
-set completeopt+=preview
-nmap <space>ed :CocCommand explorer --preset .vim<CR>
-nmap <space>ef :CocCommand explorer --preset floating<CR>
-
-" List all presets
-nmap <space>el :CocList explPresets
+exec 'source' path . '/.vim/coc.vim'
+exec 'source' path . '/.vim/coc-snippets.vim'
 
 " The Silver Searcher
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
