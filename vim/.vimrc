@@ -191,6 +191,9 @@ set noswapfile
 " When opening a new line and no filetype-specific indenting is enabled, keep
 " the same indent as the line you're currently on. Useful for READMEs, etc.
 set autoindent
+" Note: smartindent helps correctly autoindenting on special filetypes like
+" .vue
+set smartindent
 
 " Copy the structure of the existing lines indent when autoindenting a
 " new line.
@@ -281,7 +284,7 @@ noremap <C-l> <C-W>l
 "
 " Indentation settings according to personal preference.
 
-" Indentation settings for using 4 spaces instead of tabs.
+" Indentation settings for using 2 spaces instead of tabs.
 " Do not change 'tabstop' from its default value of 8 with this setup.
 set shiftwidth=2
 set softtabstop=2
