@@ -168,7 +168,13 @@ call plug#end()
 
 " Add javascript syntax highlight in .vue files (<script> region)
 exec 'source' path . '/.vim_plugins/custom_syntax_in_range.vim'
-autocmd BufNewFile,BufRead *.vue call SetSyntaxInRange('javascript' ,'<script>' ,'</script>', 'SpecialComment')
+
+autocmd BufNewFile,BufRead *.vue call SetIndentationOptions()
+function SetIndentationOptions()
+  call SetSyntaxInRange('javascript' ,'<script>' ,'</script>', 'SpecialComment')
+  set indentexpr=HtmlIndent()
+endfunction
+
 
 "------------------------------------------------------------
 " Usability options {{{1
