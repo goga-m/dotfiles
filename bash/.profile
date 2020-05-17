@@ -76,3 +76,8 @@ for profile_script in /etc/profile.d/*.sh ; do
   fi
 done
 unset profile_script
+
+# Use Liquid Prompt if found
+if [ -r "$HOME/scripts/liquidprompt/liquidprompt" ]; then
+  source $HOME/scripts/liquidprompt/liquidprompt
+fi
