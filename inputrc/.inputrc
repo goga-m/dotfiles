@@ -1,0 +1,4 @@
+$include /etc/inputrc
+set show-all-if-unmodified On
+set colored-stats On
+set completion-prefix-display-length 3
