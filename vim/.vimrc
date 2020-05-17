@@ -164,6 +164,14 @@ Plug 'iberianpig/tig-explorer.vim'
 " change and add such surroundings in pairs.
 Plug 'tpope/vim-surround'
 
+" vim-vue for Vue.js
+"
+" vim-vue fixes indentation on .vue files, without changing filetype
+" which works nicely with coc.nvim & coc-prettier formatting
+" Comes with ftdetect/vue.vim, ftplugin/vue.vim and indent/vue.vim files.
+Plug 'posva/vim-vue'
+
+
 call plug#end()
 
 " Add javascript syntax highlight in .vue files (<script> region)
@@ -172,7 +180,6 @@ exec 'source' path . '/.vim_plugins/custom_syntax_in_range.vim'
 autocmd BufNewFile,BufRead *.vue call SetIndentationOptions()
 function SetIndentationOptions()
   call SetSyntaxInRange('javascript' ,'<script>' ,'</script>', 'SpecialComment')
-  set indentexpr=HtmlIndent()
 endfunction
 
 
