@@ -6,5 +6,8 @@
   "explorer.icon.enableNerdfont": true,
   "explorer.width": 50,
   "prettier.disableLanguages": [],
-  "prettier.eslintIntegration": true
+  "prettier.eslintIntegration": true,
+  "diagnostic.errorSign": "•",
+  "diagnostic.warningSign": "•",
+  "diagnostic.infoSign": "•"
 }
