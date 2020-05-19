@@ -139,6 +139,8 @@ Plug 'andrewradev/splitjoin.vim'
 " A Vim plugin for Livedown.
 " Preview live while editing markdown files.
 Plug 'shime/vim-livedown'
+nnoremap <C-\> :Rg 
+nnoremap <silent> <C-p> :GFiles<cr>
 
 " With Wildfire you can quickly select the 
 " closest text object among a group of candidates. 
