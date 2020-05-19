@@ -182,6 +182,7 @@ exec 'source' path . '/.vim_plugins/custom_syntax_in_range.vim'
 autocmd BufNewFile,BufRead *.vue call SetIndentationOptions()
 function SetIndentationOptions()
   call SetSyntaxInRange('javascript' ,'<script>' ,'</script>', 'SpecialComment')
+  call SetSyntaxInRange('css' ,'<style>' ,'</style>', 'SpecialComment')
 endfunction
 
 
