@@ -110,7 +110,7 @@ Plug 'tomtom/tcomment_vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " coc.nvim estensions
-let g:coc_global_extensions = ['coc-marketplace', 'coc-explorer', 'coc-json', 'coc-lists', 'coc-snippets', 'coc-tsserver', 'coc-prettier', 'coc-vetur']
+let g:coc_global_extensions = ['coc-marketplace', 'coc-explorer', 'coc-json', 'coc-lists', 'coc-snippets', 'coc-tsserver', 'coc-prettier', 'coc-vetur', 'coc-cssmodules', 'coc-scssmodules']
 
 
 " Works with symlinks
