@@ -24,6 +24,10 @@ filetype indent plugin on
 " Enable syntax highlighting
 syntax on
 
+" This fixes the issue when vim randonmly breaks syntax highlight on several
+" files (e.g *.vue files)
+" See: https://stackoverflow.com/questions/27235102/vim-randomly-breaks-syntax-highlighting
+autocmd BufEnter * :syntax sync fromstart
 
 
 
@@ -184,6 +188,7 @@ function SetIndentationOptions()
   call SetSyntaxInRange('javascript' ,'<script>' ,'</script>', 'SpecialComment')
   call SetSyntaxInRange('css' ,'<style>' ,'</style>', 'SpecialComment')
 endfunction
+
 
 
 "------------------------------------------------------------
