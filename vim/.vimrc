@@ -178,6 +178,11 @@ Plug 'tpope/vim-surround'
 Plug 'posva/vim-vue'
 
 
+" vim-easymotion. 
+" Using motions to navigate anywhwere visible with 3-4 keys
+Plug 'easymotion/vim-easymotion'
+exec 'source' path . '/.vim_plugins/vim-easymotion.vim'
+
 call plug#end()
 
 " Add javascript syntax highlight in .vue files (<script> region)
@@ -186,7 +191,6 @@ exec 'source' path . '/.vim_plugins/custom_syntax_in_range.vim'
 autocmd BufNewFile,BufRead *.vue call SetIndentationOptions()
 function SetIndentationOptions()
   call SetSyntaxInRange('javascript' ,'<script>' ,'</script>', 'SpecialComment')
-  call SetSyntaxInRange('css' ,'<style>' ,'</style>', 'SpecialComment')
 endfunction
 
 
