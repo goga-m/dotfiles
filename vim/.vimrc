@@ -221,11 +221,12 @@ set noswapfile
 set autoindent
 " Note: smartindent helps correctly autoindenting on special filetypes like
 " .vue
+" set cindent
 set smartindent
 
 " Copy the structure of the existing lines indent when autoindenting a
 " new line.
-set copyindent
+" set copyindent
 
 " Stop certain movements from always going to the first character of a line.
 " While this behaviour deviates from that of Vi, it does what most users
@@ -314,14 +315,14 @@ noremap <C-l> <C-W>l
 
 " Indentation settings for using 2 spaces instead of tabs.
 " Do not change 'tabstop' from its default value of 8 with this setup.
-set shiftwidth=2
-set softtabstop=2
+" set shiftwidth=2
+" set softtabstop=2
 set expandtab
 
 " Indentation settings for using hard tabs for indent. Display tabs as
 " four characters wide.
-"set shiftwidth=4
-"set tabstop=4
+set shiftwidth=4
+set tabstop=4
 
 
 "------------------------------------------------------------
@@ -380,7 +381,7 @@ set ttyfast
 " executing macros, registers and other commands that have not been
 " typed.  Also, updating the window title is postponed.  To force an
 " update use |:redraw|.
-set lazyredraw
+" set nolazyredraw
 
 " Prevent line wrapping.
 set nowrap
