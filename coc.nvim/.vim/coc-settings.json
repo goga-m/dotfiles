@@ -1,13 +1,24 @@
 {
-  "coc.preferences.formatOnInsertLeave": true,
-  "coc.preferences.formatOnType": true,
   "suggest.noselect": false,
   "suggest.snippetIndicator": "►",
   "explorer.icon.enableNerdfont": true,
   "explorer.width": 50,
+  "explorer.contentWidth": 48,
+  "explorer.contentWidthType": "win-width",
+  "explorer.previewAction.onHover": false,
   "prettier.disableLanguages": [],
   "prettier.eslintIntegration": true,
+  "prettier.tslintIntegration": true,
   "diagnostic.errorSign": "•",
   "diagnostic.warningSign": "•",
-  "diagnostic.infoSign": "•"
+  "diagnostic.infoSign": "•",
+  "html.filetypes": ["html", "handlebars", "htmldjango", "vue"],
+  "html.autoClosingTags": true,
+  "emmet.includeLanguages": {
+    "vue-html": "html",
+    "vue": "html",
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
+  },
+  "vetur.useWorkspaceDependencies": true
 }
