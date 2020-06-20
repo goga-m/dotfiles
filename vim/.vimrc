@@ -426,6 +426,17 @@ map Y y$
 " Map exiting insert mode with jj
 inoremap jj  <esc>
 
+" Format code using coc.nvim :Format
+" inoremap <Space><CR> <C-o>:call CocAction('format')<CR>
+" autocmd! InsertLeave * call CocAction('format')<CR>
+let g:autoformatoninsertout = 1
+func! CocFormat(timer)
+    if(mode() == 'n' && g:autoformatoninsertout == 1)
+        call CocAction('format')
+    endif
+endfunction
+autocmd! InsertLeave * call timer_start(600, 'CocFormat',{'repeat': 0})
+
 " Correcting bad indent while pasting with zp :-)
 nnoremap zp p=`] 
 
