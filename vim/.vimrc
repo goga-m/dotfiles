@@ -177,6 +177,9 @@ Plug 'iberianpig/tig-explorer.vim'
 " change and add such surroundings in pairs.
 Plug 'tpope/vim-surround'
 
+" Repeat.vim remaps . in a way that plugins can tap into it
+Plug 'tpope/vim-repeat'
+
 " vim-vue for Vue.js
 "
 " vim-vue fixes indentation on .vue files, without changing filetype
