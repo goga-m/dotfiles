@@ -183,6 +183,13 @@ Plug 'posva/vim-vue'
 Plug 'easymotion/vim-easymotion'
 exec 'source' path . '/.vim_plugins/vim-easymotion.vim'
 
+
+" Targets.vim is a Vim plugin that adds various text objects to give you more targets to operate on. 
+" It expands on the idea of simple commands like di' (delete inside the single quotes around the cursor) 
+" to give you more opportunities to craft powerful commands that can be repeated reliably. One major goal is 
+" to handle all corner cases correctly.
+Plug 'wellle/targets.vim'
+
 call plug#end()
 
 " Add javascript syntax highlight in .vue files (<script> region)
