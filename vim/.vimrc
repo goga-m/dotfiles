@@ -204,7 +204,7 @@ endfunction
 " use is very much a personal preference, but they are harmless.
 
 " Set leader key
-let mapleader = ','
+" let mapleader = ','
 
 " Use case insensitive search, except when using capital letters
 set ignorecase
