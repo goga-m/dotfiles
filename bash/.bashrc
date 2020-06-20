@@ -8,7 +8,7 @@ export HISTCONTROL=ignoredups
 [ -s "$HOME/scripts/aliases.sh" ] && . "$HOME/scripts/aliases.sh"  # Load custom aliases if found
 
 # Git bash completion
-[ -f "$HOME/scripts/git-completion.bash" ] && . "$HOME/scripts/git-completion.bash"  # Load git completions
+[ -f "$HOME/.git-completion.bash" ] && . "$HOME/.git-completion.bash"  # Load git completions
 
 # Navigation
 if [ -x "/usr/bin/exa"  ]; then alias ll="exa -l"; else alias ll="ls -alh"; fi
