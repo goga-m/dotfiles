@@ -1,3 +1,6 @@
+# Avoid duplicates in bash history
+export HISTCONTROL=ignoredups
+
 # Load profile
 [ -s "$HOME/.profile" ] && . "$HOME/.profile"
 
