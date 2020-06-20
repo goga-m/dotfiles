@@ -131,6 +131,14 @@ Plug 'junegunn/fzf.vim'
 " closetag hand autoclosing of tags.
 Plug 'jiangmiao/auto-pairs'
 
+" Auto close (X)HTML tags
+Plug 'alvan/vim-closetag'
+let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.vue, *.blade.php, *.tsx"
+
+" Extend % to match tags, otherwise it will match between <> tags
+packadd! matchit
+
+
 " This plugin is meant to simplify a task I've 
 " found too common in my workflow: switching between a 
 " single-line statement and a multi-line one. It offers 
