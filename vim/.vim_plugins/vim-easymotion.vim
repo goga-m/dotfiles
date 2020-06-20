@@ -1,5 +1,5 @@
 " Search in active pane/window
-map f <Plug>(easymotion-prefix)s
+map ff <Plug>(easymotion-prefix)s
 
 " Search in all active windows
 map  F <Plug>(easymotion-bd-f)
