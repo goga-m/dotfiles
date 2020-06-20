@@ -135,6 +135,9 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'alvan/vim-closetag'
 let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.vue, *.blade.php, *.tsx"
 
+" Show lines that have been added modified or removed.
+Plug 'airblade/vim-gitgutter'
+
 " Extend % to match tags, otherwise it will match between <> tags
 packadd! matchit
 
