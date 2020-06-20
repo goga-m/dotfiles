@@ -388,18 +388,6 @@ set nowrap
 " Highlight the text line of the cursor.
 set cursorline
 
-hi cursorline cterm=none term=none
-autocmd WinEnter * setlocal cursorline
-autocmd WinLeave * setlocal nocursorline
-highlight CursorLine guibg=#000050 ctermbg=234
-
-" Highlight the current column of the cursor.
-" set cursorcolumn
-" hi cursorcolumn cterm=none term=none
-" autocmd WinEnter * setlocal cursorcolumn
-" autocmd WinLeave * setlocal nocursorline
-" highlight cursorcolumn guibg=#000050 ctermbg=234
-
 "------------------------------------------------------------
 " Mappings {{{1
 "
