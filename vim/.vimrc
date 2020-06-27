@@ -442,11 +442,8 @@ nnoremap <F2> :Format<CR>
 " Correcting bad indent while pasting with zp :-)
 nnoremap zp p=`] 
 
-" Resize panes using alt + hjkl.
-nnoremap <silent> <A-h> <C-w><
-nnoremap <silent> <A-j> <C-W>-
-nnoremap <silent> <A-k> <C-W>+
-nnoremap <silent> <A-l> <C-w>>
-
-" Indent the entire file and return to the current position.
-noremap <silent> <F5> m8gg=G`8
+" Resize panes using control + arrow keys
+nnoremap <silent> <C-Left> <C-w><
+nnoremap <silent> <C-Right> <C-w>>
+nnoremap <silent> <C-Up> <C-w>-
+nnoremap <silent> <C-Down> <C-w>+
