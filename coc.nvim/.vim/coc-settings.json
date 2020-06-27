@@ -14,11 +14,5 @@
   "diagnostic.infoSign": "•",
   "html.filetypes": ["html", "handlebars", "htmldjango", "vue"],
   "html.autoClosingTags": true,
-  "emmet.includeLanguages": {
-    "vue-html": "html",
-    "vue": "html",
-    "javascript": "javascriptreact",
-    "typescript": "typescriptreact"
-  },
   "vetur.useWorkspaceDependencies": true
 }
