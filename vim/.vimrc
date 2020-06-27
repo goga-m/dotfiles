@@ -431,12 +431,13 @@ inoremap jj  <esc>
 " inoremap <Space><CR> <C-o>:call CocAction('format')<CR>
 " autocmd! InsertLeave * call CocAction('format')<CR>
 let g:autoformatoninsertout = 1
-func! CocFormat(timer)
+func! CocFormat()
     if(mode() == 'n' && g:autoformatoninsertout == 1)
         call CocAction('format')
     endif
 endfunction
-autocmd! InsertLeave * call timer_start(600, 'CocFormat',{'repeat': 0})
+" autocmd! InsertLeave * call timer_start(600, 'CocFormat',{'repeat': 0})
+nnoremap <F2> :Format<CR>
 
 " Correcting bad indent while pasting with zp :-)
 nnoremap zp p=`] 
