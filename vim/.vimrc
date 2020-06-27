@@ -114,7 +114,7 @@ Plug 'tomtom/tcomment_vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " coc.nvim estensions
-let g:coc_global_extensions = ['coc-marketplace', 'coc-explorer', 'coc-json', 'coc-lists', 'coc-snippets', 'coc-tsserver', 'coc-prettier', 'coc-vetur', 'coc-css', 'coc-angular', 'coc-emmet']
+let g:coc_global_extensions = ['coc-marketplace', 'coc-explorer', 'coc-json', 'coc-lists', 'coc-snippets', 'coc-tsserver', 'coc-prettier', 'coc-vetur', 'coc-css', 'coc-angular']
 
 " Works with symlinks
 exec 'source' path . '/.vim_plugins/coc.vim'
@@ -188,7 +188,7 @@ Plug 'tpope/vim-repeat'
 " vim-vue fixes indentation on .vue files, without changing filetype
 " which works nicely with coc.nvim & coc-prettier formatting
 " Comes with ftdetect/vue.vim, ftplugin/vue.vim and indent/vue.vim files.
-Plug 'posva/vim-vue'
+" Plug 'posva/vim-vue'
 
 
 " vim-easymotion. 
