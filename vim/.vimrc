@@ -203,6 +203,9 @@ exec 'source' path . '/.vim_plugins/vim-easymotion.vim'
 " to handle all corner cases correctly.
 Plug 'wellle/targets.vim'
 
+"
+Plug 'editorconfig/editorconfig-vim'
+
 call plug#end()
 
 " Add javascript syntax highlight in .vue files (<script> region)
