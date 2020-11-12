@@ -31,7 +31,6 @@ autocmd BufEnter * :syntax sync fromstart
 
 
 
-
 "------------------------------------------------------------
 " Must have options {{{1
 "
@@ -173,6 +172,11 @@ exec 'source' path . '/.vim_plugins/vim-airline.vim'
 " * Open files in tabs or in vertically/horizontal split windows on Vim from Tig
 " * Dynamically defining keymaps on Tig
 Plug 'iberianpig/tig-explorer.vim'
+
+" Fugitive is the premier Vim plugin for Git. 
+" Good for confict resolution
+Plug 'tpope/vim-fugitive'
+
 
 " Surround.vim is about surroundings: 
 " parentheses, brackets, quotes, XML tags, and more. 
