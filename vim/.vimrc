@@ -103,6 +103,9 @@ call plug#begin('~/.vim/plugged')
 " Gruvbox colorscheme
 Plug 'morhetz/gruvbox'
 
+" Sonokai colorscheme
+Plug 'sainnhe/sonokai'
+
 " tcomment provides easy to use, file-type sensible comments for Vim. It 
 " can handle embedded syntax.
 Plug 'tomtom/tcomment_vim'
@@ -374,15 +377,13 @@ command! ProfileView :e ~/.vim/profile.log
 " Apply colors on all terminals
 set t_Co=256
 set background=dark
+set termguicolors
 
-" Use gruvbox colorsheme. 
-" Fallback to default if gruvbox is not installed.
 try
-  colorscheme gruvbox
+  colorscheme sonokai 
 catch /^Vim\%((\a\+)\)\=:E185/
   colorscheme default
 endtry
-
 " Display line numbers on the left.
 set number
 
