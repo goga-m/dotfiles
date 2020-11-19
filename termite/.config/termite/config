@@ -39,7 +39,9 @@ cursor_shape = block
 
 # "off", "left" or "right"
 #scrollbar = off
-
+#
+# Edge theme
+# https://github.com/sainnhe/edge/tree/master/termite
 [colors]
 foreground = #c5cdd9
 background = #2c2e34
