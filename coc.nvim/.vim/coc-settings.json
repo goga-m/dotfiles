@@ -6,6 +6,7 @@
   "explorer.contentWidth": 48,
   "explorer.contentWidthType": "win-width",
   "explorer.previewAction.onHover": false,
+  "explorer.filename.colored.enable": true,
   "prettier.disableLanguages": [],
   "prettier.eslintIntegration": true,
   "prettier.tslintIntegration": true,
