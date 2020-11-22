@@ -474,3 +474,4 @@ filetype *.md5 md5sum -c %f
 command! extractfiles :execute '!%%n extract-files' &fusehome expand('%%D') expand('%%f:p')
 
 source ~/.config/vifm/vifm_devicons
+source ~/.config/vifm/vifm_fzf
