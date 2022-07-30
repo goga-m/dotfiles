@@ -350,7 +350,7 @@ filextype */
 
 " Displaying pictures in terminal
 "
-" fileviewer *.jpg,*.png shellpic %c
+" fileviewer *.jpg,*.png *.webp shellpic %c
 
 " Open all other files with default system programs (you can also remove all
 " :file[x]type commands above to ensure they don't interfere with system-wide
@@ -455,7 +455,7 @@ nnoremap <f8> :delete<cr>
 " nnoremap <left> <nop>
 
 " Images
-filextype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm,*.svg,*.ico,*.pdf
+filextype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm,*.svg,*.ico,*.pdf,*.webp
         \ {View in sxiv}
         \ sxiv %f,
         \ {View in gpicview}
@@ -463,15 +463,30 @@ filextype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm,*.svg,*.ico,*.pdf
         \ {View in shotwell}
         \ shotwell,
 
-fileviewer *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm,*.svg,*.ico,*.pdf
+fileviewer *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm,*.svg,*.ico,*.pdf,*.webp
          \ ~/.config/vifm/scripts/imgt.sh %px %py %pw %ph %c
          \ %pc
          \ ~/.config/vifm/scripts/imgc.sh %px %py %pw %ph
 
-filetype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm,*.svg,*.ico feh %f 2>/dev/null &
+filetype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm,*.svg,*.ico,*.png feh %f 2>/dev/null &
 filetype *.md5 md5sum -c %f
 
 command! extractfiles :execute '!%%n extract-files' &fusehome expand('%%D') expand('%%f:p')
 
 source ~/.config/vifm/vifm_devicons
 source ~/.config/vifm/vifm_fzf
+
+
+" Open directory under the cursor in other pane
+nnoremap zo :sync %d<CR><Tab>
+
+" Open current directory in other pane
+nnoremap zzo :sync %c<CR><Tab>
+
+
+" FtpMount
+filetype *.ftp
+       \ {Mount with CurlFtpFS}
+       \ FUSE_MOUNT2|curlftpfs -o ftp_port=-,,disable_eprt %PARAM %DESTINATION_DIR %CLEAR,
+
+set slowfs=curlftpfs

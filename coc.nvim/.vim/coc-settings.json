@@ -8,12 +8,14 @@
   "explorer.previewAction.onHover": false,
   "explorer.filename.colored.enable": true,
   "prettier.disableLanguages": [],
-  "prettier.eslintIntegration": true,
-  "prettier.tslintIntegration": true,
   "diagnostic.errorSign": "•",
   "diagnostic.warningSign": "•",
   "diagnostic.infoSign": "•",
   "html.filetypes": ["html", "handlebars", "htmldjango", "vue"],
   "html.autoClosingTags": true,
-  "vetur.useWorkspaceDependencies": true
+  "vetur.useWorkspaceDependencies": true,
+  "vetur.completion.autoImport": true,
+  "coc.preferences.jumpCommand": "split",
+  "suggest.triggerCompletionWait": 60,
+  "volar.enable": false
 }
