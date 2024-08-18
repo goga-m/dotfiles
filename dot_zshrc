@@ -38,6 +38,7 @@ ZSH_THEME="robbyrussell"
 plugins=(
   git
   fzf-tab
+  zsh-syntax-highlighting
 )
 
 # Load Oh My Zsh
@@ -102,7 +103,6 @@ export FZF_DEFAULT_OPTS='--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9 --color=fg+:#f
 
 # Initialize zsh plugins
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Keybindings for autosuggestions
 bindkey ';;'  autosuggest-accept
@@ -110,13 +110,15 @@ bindkey ';;'  autosuggest-accept
 # Additional tool initialization
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
+# . "$HOME/.atuin/bin/env"
 
 # History configuration
 eval "$(atuin init zsh)"
-touch ~/.zsh_history
 HISTSIZE=50000
 HISTFILE="~/.zsh_history"
 HISTDUP="erase"
+
+touch $HISTFILE
 setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups hist_save_no_dups hist_ignore_dups hist_find_no_dups
 
 
