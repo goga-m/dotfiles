@@ -110,7 +110,6 @@ bindkey ';;'  autosuggest-accept
 # Additional tool initialization
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
-. "$HOME/.atuin/bin/env"
 
 # History configuration
 eval "$(atuin init zsh)"
