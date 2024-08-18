@@ -114,7 +114,8 @@ eval "$(zoxide init zsh)"
 
 # History configuration
 eval "$(atuin init zsh)"
-HISTSIZE=5000
+touch ~/.zsh_history
+HISTSIZE=50000
 HISTFILE="~/.zsh_history"
 HISTDUP="erase"
 setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups hist_save_no_dups hist_ignore_dups hist_find_no_dups
