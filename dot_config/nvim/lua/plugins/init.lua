@@ -14,6 +14,8 @@ return {
       require("nvchad.configs.lspconfig").defaults()
       require "configs.lspconfig"
     end,
+    version = "*",
+    opts = {},
   },
 
   {
@@ -42,6 +44,7 @@ return {
         "tsx",
       },
     },
+    filetypes = { "css", "pcss", "ini", "xml", "json" },
   },
   -- Custom plugins
   {
@@ -53,7 +56,7 @@ return {
   },
   {
     "heavenshell/vim-jsdoc",
-    ft = { "javascript", "javascript.jsx" },
+    ft = { "javascript", "javascript.jsx", "typescript", "typescript.tsx" },
     build = "make install",
   },
   {
@@ -144,18 +147,6 @@ return {
       "rcarriga/nvim-notify",
     },
   },
-  {
-    "ThePrimeagen/harpoon",
-    branch = "harpoon2",
-    event = "VeryLazy",
-    opts = {},
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    config = function()
-      require "configs.harpoon"
-    end,
-  },
   { "junegunn/fzf", build = "./install --bin" },
   {
     "ibhagwan/fzf-lua",
@@ -176,22 +167,6 @@ return {
         },
       }
     end,
-  },
-  {
-    "ldelossa/gh.nvim",
-    dependencies = {
-      {
-        "ldelossa/litee.nvim",
-        config = function()
-          require("litee.lib").setup()
-        end,
-      },
-    },
-    config = function()
-      require("litee.gh").setup()
-    end,
-    event = "VeryLazy",
-    opts = {},
   },
   -- Conflicts with ctrl-\\ for rg modal
   -- {
@@ -215,5 +190,17 @@ return {
   {
     "RyanMillerC/better-vim-tmux-resizer",
     event = "VeryLazy",
+  },
+  {
+    "luckasRanarison/tailwind-tools.nvim",
+    event = "VeryLazy",
+    name = "tailwind-tools",
+    build = ":UpdateRemotePlugins",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-telescope/telescope.nvim", -- optional
+      "neovim/nvim-lspconfig", -- optional
+    },
+    opts = {}, -- your configuration
   },
 }
