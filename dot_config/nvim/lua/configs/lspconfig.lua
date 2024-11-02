@@ -4,9 +4,8 @@ local on_init = require("nvchad.configs.lspconfig").on_init
 local capabilities = require("nvchad.configs.lspconfig").capabilities
 
 local lspconfig = require "lspconfig"
-local servers = { "html", "cssls", "tsserver", "eslint" }
+local servers = { "html", "cssls", "ts_ls", "eslint" }
 
--- Custom diagnostic configuration
 local custom_on_attach = function(client, bufnr)
   on_attach(client, bufnr)
 
@@ -26,7 +25,7 @@ for _, lsp in ipairs(servers) do
 end
 
 -- typescript
-lspconfig.tsserver.setup {
+lspconfig.ts_ls.setup {
   on_attach = on_attach,
   on_init = on_init,
   capabilities = capabilities,

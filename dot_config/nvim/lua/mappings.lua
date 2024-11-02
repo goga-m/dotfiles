@@ -78,10 +78,13 @@ map("n", "<leader>cf", ':let @+=expand("%:p")<CR>', { noremap = true, silent = t
 -- Custom git mappings
 require "configs.git-mappings"
 
-map('n', '<C-Left>', ':TmuxResizeLeft<CR>', { noremap = true, silent = true })
-map('n', '<C-Down>', ':TmuxResizeDown<CR>', { noremap = true, silent = true })
-map('n', '<C-Up>', ':TmuxResizeUp<CR>', { noremap = true, silent = true })
-map('n', '<C-Right>', ':TmuxResizeRight<CR>', { noremap = true, silent = true })
+map("n", "<C-Left>", ":TmuxResizeLeft<CR>", { noremap = true, silent = true })
+map("n", "<C-Down>", ":TmuxResizeDown<CR>", { noremap = true, silent = true })
+map("n", "<C-Up>", ":TmuxResizeUp<CR>", { noremap = true, silent = true })
+map("n", "<C-Right>", ":TmuxResizeRight<CR>", { noremap = true, silent = true })
+
+-- Dismiss noice messages
+map("n", "<leader>mm", ":NoiceDismiss<CR>", { noremap = true, silent = true })
 
 -- Terminal mappings
 -- https://nvchad.com/docs/config/nvchad_ui/#term
@@ -96,3 +99,5 @@ map('n', '<C-Right>', ':TmuxResizeRight<CR>', { noremap = true, silent = true })
 --     clear_cmd = false,
 --   }
 -- end, { desc = "Terminal Toggle Floating term" })
+
+-- TODO: Persist yanked text for multiple paste support
