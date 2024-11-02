@@ -39,6 +39,8 @@ plugins=(
   git
   fzf-tab
   zsh-syntax-highlighting
+  pnpm
+  archlinux
 )
 
 # Load Oh My Zsh
@@ -61,10 +63,12 @@ alias t="tig"
 alias ts="tig status"
 alias ls="ls --color"
 alias nvimdiff="nvim -d"
+alias n="nvim"
 
 # Docker Aliases
 alias dup="sudo systemctl start docker.service; docker-compose up"
 alias dls='function _dgrep() { echo "Docker containers"; docker ps -a | grep "$1"; echo "Docker images"; docker images | grep "$1" }; _dgrep'
+alias ddown="sudo systemctl stop docker.socket; sudo systemctl stop docker.service"
 
 # Show available aliases with fzf.
 alias-fzf() {
@@ -114,11 +118,9 @@ eval "$(zoxide init zsh)"
 
 # History configuration
 eval "$(atuin init zsh)"
-HISTSIZE=50000
+HISTSIZE=5000
 HISTFILE="~/.zsh_history"
 HISTDUP="erase"
-
-touch ~/.zsh_history
 setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups hist_save_no_dups hist_ignore_dups hist_find_no_dups
 
 
