@@ -44,9 +44,4 @@ return {
       },
     },
   },
-  spec = {
-    { "LazyVim/LazyVim", import = "lazyvim.plugins" },
-    { import = "lazyvim.plugins.extras.editor.fzf" },
-    { import = "plugins" },
-  },
 }
