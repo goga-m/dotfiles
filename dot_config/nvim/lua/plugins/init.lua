@@ -2,89 +2,79 @@ return {
   {
     "stevearc/conform.nvim",
     -- event = 'BufWritePre', -- uncomment for format on save
-    config = function()
-      require "configs.conform"
-    end,
+    opts = require "configs.conform",
   },
 
   -- These are some examples, uncomment them if you want to see them work!
   {
     "neovim/nvim-lspconfig",
     config = function()
-      require("nvchad.configs.lspconfig").defaults()
       require "configs.lspconfig"
     end,
-    version = "*",
-    opts = {},
   },
 
-  {
-    "williamboman/mason.nvim",
-    opts = {
-      ensure_installed = {
-        "lua-language-server",
-        "stylua",
-        "html-lsp",
-        "css-lsp",
-        "prettier",
-        "typescript-language-server",
-        "eslint-lsp",
-      },
-    },
-  },
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = {
-      ensure_installed = {
-        "vim",
-        "lua",
-        "vimdoc",
-        "html",
-        "css",
-        "tsx",
-      },
-    },
-    filetypes = { "css", "pcss", "ini", "xml", "json" },
-  },
-  -- Custom plugins
-  {
-    "nvim-lua/plenary.nvim",
-  },
+  -- {
+  -- 	"nvim-treesitter/nvim-treesitter",
+  -- 	opts = {
+  -- 		ensure_installed = {
+  -- 			"vim", "lua", "vimdoc",
+  --      "html", "css"
+  -- 		},
+  -- 	},
+  -- },
+
   {
     "ruifm/gitlinker.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
-  },
-  {
-    "heavenshell/vim-jsdoc",
-    ft = { "javascript", "javascript.jsx", "typescript", "typescript.tsx" },
-    build = "make install",
   },
   {
     "kylechui/nvim-surround",
     event = "VeryLazy",
     opts = {},
   },
-  -- {
-  --   "rmagatti/auto-session",
-  --   lazy = false, -- Required to load the plugin, otherwise, an event needs to be specified.
-  --   opts = {}, -- Required to load the plugin.
-  -- },
   {
-    "David-Kunz/gen.nvim",
-    lazy = false,
+    "echasnovski/mini.nvim",
+    version = "*",
     config = function()
-      require "configs.gen"
+      require("mini.pairs").setup()
+      require("mini.splitjoin").setup()
     end,
   },
+
   {
-    "nvim-telescope/telescope-ui-select.nvim",
-    lazy = false,
-    config = function()
-      require "configs.telescope-ui-select"
-    end,
-  },
-  {
-    "rbgrouleff/bclose.vim",
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {
+      lsp = {
+        signature = {
+          enabled = false,
+        },
+      },
+      routes = {
+        {
+          view = "notify",
+          filter = { event = "msg_showmode" },
+        },
+      },
+      sections = {
+        lualine_x = {
+          {
+            require("noice").api.statusline.mode.get,
+            cond = require("noice").api.statusline.mode.has,
+            color = { fg = "#ff9e64" },
+          },
+        },
+      },
+      -- add any options here
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      "rcarriga/nvim-notify",
+    },
   },
   {
     "iberianpig/tig-explorer.vim",
@@ -92,9 +82,24 @@ return {
     lazy = false,
   },
   {
-    "windwp/nvim-ts-autotag",
-    lazy = false,
-    opts = {},
+    "ibhagwan/fzf-lua",
+    -- optional for icon support
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("fzf-lua").setup {
+        { "telescope" },
+        winopts = { fullscreen = false },
+        actions = {
+          files = {
+            -- Selection keybindings
+            ["default"] = require("fzf-lua.actions").file_edit_or_qf,
+            ["ctrl-h"] = require("fzf-lua.actions").file_split,
+            ["ctrl-v"] = require("fzf-lua.actions").file_vsplit,
+            ["ctrl-t"] = require("fzf-lua.actions").file_tabedit,
+          },
+        },
+      }
+    end,
   },
   {
     "folke/flash.nvim",
@@ -122,93 +127,5 @@ return {
       -- { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
       -- { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
     },
-  },
-  {
-    "tpope/vim-fugitive",
-    lazy = false,
-  },
-  {
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    opts = {
-      lsp = {
-        signature = {
-          enabled = false,
-        },
-      },
-      -- add any options here
-    },
-    dependencies = {
-      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-      "MunifTanjim/nui.nvim",
-      -- OPTIONAL:
-      --   `nvim-notify` is only needed, if you want to use the notification view.
-      --   If not available, we use `mini` as the fallback
-      "rcarriga/nvim-notify",
-    },
-  },
-  { "junegunn/fzf", build = "./install --bin" },
-  {
-    "ibhagwan/fzf-lua",
-    -- optional for icon support
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    config = function()
-      require("fzf-lua").setup {
-        { "telescope" },
-        winopts = { fullscreen = false },
-        actions = {
-          files = {
-            -- Selection keybindings
-            ["default"] = require("fzf-lua.actions").file_edit_or_qf,
-            ["ctrl-h"] = require("fzf-lua.actions").file_split,
-            ["ctrl-v"] = require("fzf-lua.actions").file_vsplit,
-            ["ctrl-t"] = require("fzf-lua.actions").file_tabedit,
-          },
-        },
-      }
-    end,
-  },
-  -- Conflicts with ctrl-\\ for rg modal
-  -- {
-  --   "christoomey/vim-tmux-navigator",
-  --   event = "VeryLazy",
-  --   cmd = {
-  --     "TmuxNavigateLeft",
-  --     "TmuxNavigateDown",
-  --     "TmuxNavigateUp",
-  --     "TmuxNavigateRight",
-  --     "TmuxNavigatePrevious",
-  --   },
-  --   keys = {
-  --     { "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
-  --     { "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
-  --     { "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
-  --     { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
-  --     -- { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
-  --   },
-  -- },
-  {
-    "RyanMillerC/better-vim-tmux-resizer",
-    event = "VeryLazy",
-  },
-  {
-    "luckasRanarison/tailwind-tools.nvim",
-    event = "VeryLazy",
-    name = "tailwind-tools",
-    build = ":UpdateRemotePlugins",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "nvim-telescope/telescope.nvim", -- optional
-      "neovim/nvim-lspconfig",         -- optional
-    },
-    opts = {},                         -- your configuration
-  },
-  {
-    "AndrewRadev/splitjoin.vim",
-    event = "BufRead", -- Load the plugin only when a buffer is read
-  },
-  {
-    'echasnovski/mini.nvim',
-    version = false,
   },
 }

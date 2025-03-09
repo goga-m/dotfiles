@@ -1,32 +1,24 @@
--- EXAMPLE
-local on_attach = require("nvchad.configs.lspconfig").on_attach
-local on_init = require("nvchad.configs.lspconfig").on_init
-local capabilities = require("nvchad.configs.lspconfig").capabilities
+-- load defaults i.e lua_lsp
+require("nvchad.configs.lspconfig").defaults()
+
 
 local lspconfig = require "lspconfig"
+
+-- EXAMPLE
 local servers = { "html", "cssls", "ts_ls", "eslint" }
+local nvlsp = require "nvchad.configs.lspconfig"
 
-local custom_on_attach = function(client, bufnr)
-  on_attach(client, bufnr)
-
-  -- Custom diagnostic settings
-  vim.diagnostic.config {
-    underline = false, -- Disable underlining when having errors.
-  }
-end
 
 -- lsps with default config
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
-    on_attach = custom_on_attach,
-    on_init = on_init,
-    capabilities = capabilities,
+    on_attach = nvlsp.on_attach,
+    on_init = nvlsp.on_init,
+    capabilities = nvlsp.capabilities,
   }
 end
 
--- typescript
-lspconfig.ts_ls.setup {
-  on_attach = on_attach,
-  on_init = on_init,
-  capabilities = capabilities,
-}
+-- Disable underlining the whole line on diagnostic errors & warnings
+vim.diagnostic.config({
+  underline = false,
+})
