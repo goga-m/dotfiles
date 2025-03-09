@@ -203,4 +203,12 @@ return {
     },
     opts = {},                         -- your configuration
   },
+  {
+    "AndrewRadev/splitjoin.vim",
+    event = "BufRead", -- Load the plugin only when a buffer is read
+  },
+  {
+    'echasnovski/mini.nvim',
+    version = false,
+  },
 }
