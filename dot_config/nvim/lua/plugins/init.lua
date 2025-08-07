@@ -5,23 +5,12 @@ return {
     opts = require "configs.conform",
   },
 
-  -- These are some examples, uncomment them if you want to see them work!
   {
     "neovim/nvim-lspconfig",
     config = function()
       require "configs.lspconfig"
     end,
   },
-
-  -- {
-  -- 	"nvim-treesitter/nvim-treesitter",
-  -- 	opts = {
-  -- 		ensure_installed = {
-  -- 			"vim", "lua", "vimdoc",
-  --      "html", "css"
-  -- 		},
-  -- 	},
-  -- },
 
   {
     "ruifm/gitlinker.nvim",
@@ -41,41 +30,6 @@ return {
     end,
   },
 
-  {
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    opts = {
-      lsp = {
-        signature = {
-          enabled = false,
-        },
-      },
-      routes = {
-        {
-          view = "notify",
-          filter = { event = "msg_showmode" },
-        },
-      },
-      sections = {
-        lualine_x = {
-          {
-            require("noice").api.statusline.mode.get,
-            cond = require("noice").api.statusline.mode.has,
-            color = { fg = "#ff9e64" },
-          },
-        },
-      },
-      -- add any options here
-    },
-    dependencies = {
-      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-      "MunifTanjim/nui.nvim",
-      -- OPTIONAL:
-      --   `nvim-notify` is only needed, if you want to use the notification view.
-      --   If not available, we use `mini` as the fallback
-      "rcarriga/nvim-notify",
-    },
-  },
   {
     "iberianpig/tig-explorer.vim",
     dependencies = { "rbgrouleff/bclose.vim" },
@@ -127,5 +81,54 @@ return {
       -- { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
       -- { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
     },
+  },
+  {
+    "tpope/vim-fugitive",
+    lazy = false,
+  },
+  {
+    "nvim-pack/nvim-spectre",
+    lazy = false,
+  },
+  {
+    "mikavilpas/yazi.nvim",
+    event = "VeryLazy",
+    dependencies = {
+      { "nvim-lua/plenary.nvim", lazy = true },
+    },
+    keys = {
+      -- 👇 in this section, choose your own keymappings!
+      {
+        "<leader>-",
+        mode = { "n", "v" },
+        "<cmd>Yazi<cr>",
+        desc = "Open yazi at the current file",
+      },
+      {
+        -- Open in the current working directory
+        "<leader>cw",
+        "<cmd>Yazi cwd<cr>",
+        desc = "Open the file manager in nvim's working directory",
+      },
+      {
+        "<c-up>",
+        "<cmd>Yazi toggle<cr>",
+        desc = "Resume the last yazi session",
+      },
+    },
+    ---@type YaziConfig | {}
+    opts = {
+      -- if you want to open yazi instead of netrw, see below for more info
+      open_for_directories = false,
+      keymaps = {
+        show_help = "<f1>",
+      },
+    },
+    -- 👇 if you use `open_for_directories=true`, this is recommended
+    init = function()
+      -- More details: https://github.com/mikavilpas/yazi.nvim/issues/802
+      -- vim.g.loaded_netrw = 1
+      vim.g.loaded_netrwPlugin = 1
+    end,
   },
 }
