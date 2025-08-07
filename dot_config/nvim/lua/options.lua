@@ -15,3 +15,4 @@ o.ttyfast = true
 o.confirm = true
 o.autoread = true
 o.swapfile = false
+
