@@ -1,0 +1,13 @@
+bind main R !git rebase -i %(commit)^
+bind diff R !git rebase -i %(commit)^
+
+bind main c !git checkout %(commit)
+
+bind status S !git stash -k
+bind status P !git push origin
+bind status p !git pull origin
+bind status w !git commit -m "wip"
+
+bind generic <C-r> !git revert --no-commit %commit
+
+set main-view-id = yes
