@@ -64,6 +64,7 @@ alias ts="tig status"
 alias ls="ls --color"
 alias nvimdiff="nvim -d"
 alias n="nvim"
+alias v="nvim"
 
 # Docker Aliases
 alias dup="sudo systemctl start docker.service; docker-compose up"
@@ -144,3 +145,5 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 # zstyle ':omz:update' mode auto      # update automatically without asking
 # zstyle ':omz:update' mode reminder  # remind to update
 # zstyle ':omz:update' frequency 13   # set update frequency (in days)
+
+source ~/.profile
