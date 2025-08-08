@@ -1,0 +1,10 @@
+[Unit]
+Description=udiskie mount daemon
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/udiskie --no-notify --smart-tray
+
+[Install]
+WantedBy=graphical-session.target
