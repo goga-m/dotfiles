@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# ==============================================================================
+# Rofi Dracula Theme Installation Script
+# This script installs necessary packages and sets up the Dracula theme for Rofi.
+# It is designed to be used in conjunction with a dotfile manager like chezmoi.
+# ==============================================================================
+
+echo "-> Installing required packages: wl-clipboard, cliphist, rofi"
+sudo pacman -S --noconfirm wl-clipboard cliphist rofi
+
+TMP_DIR="$HOME/.tmp/rofi-dracula-theme"
+echo "-> Cloning the official Dracula Rofi theme repository to a temporary directory: $TMP_DIR"
+mkdir -p "$TMP_DIR"
+git clone https://github.com/dracula/rofi "$TMP_DIR"
+
+ROFI_CONFIG_DIR="$HOME/.config/rofi"
+if [ ! -d "$ROFI_CONFIG_DIR" ]; then
+  echo "-> Creating Rofi configuration directory: $ROFI_CONFIG_DIR"
+  mkdir -p "$ROFI_CONFIG_DIR"
+fi
+
+echo "-> Copying Dracula theme to Rofi configuration directory"
+cp "$TMP_DIR/theme/config1.rasi" "$ROFI_CONFIG_DIR/config.rasi"
+
+echo "-> Cleaning up temporary files"
+rm -rf "$TMP_DIR"
+
+echo "-> Installation and setup of Dracula theme for Rofi is complete."
