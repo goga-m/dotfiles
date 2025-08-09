@@ -1,0 +1,30 @@
+#!/usr/bin/env zsh
+
+USER_TO_ADD=$(whoami)
+
+if [ -z "$USER_TO_ADD" ]; then
+  echo "Error: Could not determine the user. Please run this script with sudo."
+  exit 1
+fi
+
+echo "Installing PipeWire and necessary dependencies..."
+sudo pacman -S --noconfirm pipewire pipewire-pulse pipewire-alsa wireplumber pavucontrol
+
+if [ $? -eq 0 ]; then
+  echo "PipeWire installation complete."
+else
+  echo "Error: pacman failed to install one or more packages. Exiting."
+  exit 1
+fi
+
+echo "Checking if user '$USER_TO_ADD' is in the 'audio' group..."
+if ! groups "$USER_TO_ADD" | grep -q "audio"; then
+  echo "Adding user '$USER_TO_ADD' to the 'audio' group..."
+  sudo usermod -aG audio "$USER_TO_ADD"
+  echo "User '$USER_TO_ADD' has been added to the 'audio' group."
+  echo "Please reboot or log out and log back in for the changes to take effect."
+else
+  echo "User '$USER_TO_ADD' is already in the 'audio' group. No changes made."
+fi
+
+echo "Script finished successfully."
