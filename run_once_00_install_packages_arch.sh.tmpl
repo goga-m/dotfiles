@@ -33,4 +33,16 @@ install_package "firefox" "firefox"
 install_package "google-chrome" "google-chrome"
 install_package "brave-bin" "brave-bin"
 
+
+# Install nodejs dependencies
+
+install_package "fnm" "fnm"
+
+fnm install 22
+npm install -G pnpm
+
+# Neovim ts language servers.
+npm install -g vscode-langservers-extracted
+npm install -g typescript-language-server
+
 echo "Installation script finished."
