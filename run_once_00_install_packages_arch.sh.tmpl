@@ -50,15 +50,31 @@ install_package "brave-bin" "brave-bin"
 # Install nodejs dependencies using fnm
 if command -v fnm >/dev/null 2>&1; then
     echo "Setting up Node.js with fnm..."
-    fnm install 22
-    # Source fnm to make it available in the current shell
-    eval "$(fnm env)"
     
-    # Install pnpm and language servers
-    npm install -g pnpm
-    npm install -g typescript
-    npm install -g vscode-langservers-extracted
-    npm install -g typescript-language-server
+    # Install Node.js v22 if not already installed
+    if ! fnm list | grep -q "v22\."; then
+        fnm install 22
+    else
+        echo "Node.js v22 is already installed."
+    fi
+    
+    # Set v22 as default
+    fnm default 22
+    
+    # Source fnm to make it available in the current shell
+    eval "$(fnm env --shell=bash)"
+    
+    # Verify Node.js is available
+    if command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
+        echo "Installing global npm packages..."
+        npm install -g pnpm
+        npm install -g typescript
+        npm install -g vscode-langservers-extracted
+        npm install -g typescript-language-server
+        echo "Global npm packages installed successfully."
+    else
+        echo "Warning: Node.js or npm not available after fnm setup"
+    fi
 else
     echo "Warning: fnm not available, skipping Node.js setup"
 fi
