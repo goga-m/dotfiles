@@ -60,7 +60,7 @@ cursor = "CellForeground"
 text = "CellBackground"
 
 [font]
-size = 7 
+size = 10 
 
 [font.bold]
 family = "JetBrains Mono"
@@ -73,3 +73,6 @@ style = "Italic"
 [font.normal]
 family = "JetBrains Mono"
 style = "Regular"
+
+[window]
+padding = { x = 10, y = 8 }
