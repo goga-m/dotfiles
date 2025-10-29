@@ -16,3 +16,7 @@ map(
 map("x", "p", "pgvy", { noremap = true, silent = true, desc = "Paste and reselect pasted text" })
 
 map("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
+
+-- Half page navigation with ctrl-k/j
+map("n", "<C-S-j>", "<C-d>")
+map("n", "<C-S-k>", "<C-u>")
