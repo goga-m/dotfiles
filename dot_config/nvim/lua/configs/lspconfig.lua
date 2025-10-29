@@ -1,11 +1,23 @@
 -- load defaults i.e lua_lsp
 require("nvchad.configs.lspconfig").defaults()
 
-local configs = require "nvchad.configs.lspconfig"
+local configs = require("nvchad.configs.lspconfig")
 
 -- EXAMPLE
-local servers = { "html", "cssls", "ts_ls", "eslint", "pyright" }
-local nvlsp = require "nvchad.configs.lspconfig"
+local servers = {
+  "html",
+  "cssls",
+  "ts_ls",
+  "eslint",
+  "pyright",
+  "javascript",
+  "javascriptreact",
+  "typescriptreact",
+  "javascript.jsx",
+  "typescript.tsx",
+  "tailwindcss",
+}
+local nvlsp = require("nvchad.configs.lspconfig")
 
 local function set_diagnostic_virtual_text_colors()
   -- Set background to none for all diagnostic virtual text types
@@ -32,10 +44,10 @@ for _, lsp in ipairs(servers) do
 end
 
 -- Disable underlining the whole line on diagnostic errors & warnings
-vim.diagnostic.config {
+vim.diagnostic.config({
   underline = false,
   -- virtual_text = false,
-}
+})
 
 -- vim.keymap.set("n", "<leader>do", vim.diagnostic.open_float)
 -- vim.api.nvim_create_autocmd("CursorHold", {
@@ -46,7 +58,7 @@ vim.diagnostic.config {
 -- })
 
 local function open_focusable_diagnostic_float()
-  vim.diagnostic.open_float { focusable = true }
+  vim.diagnostic.open_float({ focusable = true })
 end
 
 -- Create the keymap for <leader>do
