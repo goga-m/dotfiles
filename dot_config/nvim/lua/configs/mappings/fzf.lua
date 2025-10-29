@@ -13,8 +13,11 @@ end, { silent = true })
 -- Use grep_native as it's more performant than live_grep
 vim.keymap.set("n", "<C-\\>", ':lua require"fzf-lua".live_grep_native()<CR><C-g>')
 
+-- Use grep_native as it's more performant than live_grep
+-- vim.keymap.set("n", "<C-m-m>", ':lua require"fzf-lua".marks()<CR>')
+
 -- copy the word under the cursor and search fzf live grep with the yanked text.
-vim.keymap.set("n", "**", function()
+vim.keymap.set("n", "<C-S-\\>", function()
   -- Yank the word under cursor
   vim.cmd("normal! yiw")
   local search_term = vim.fn.getreg('"')
