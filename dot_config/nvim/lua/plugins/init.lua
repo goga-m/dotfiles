@@ -2,14 +2,41 @@ return {
   {
     "stevearc/conform.nvim",
     -- event = 'BufWritePre', -- uncomment for format on save
-    opts = require "configs.conform",
+    opts = require("configs.conform"),
   },
 
   {
     "neovim/nvim-lspconfig",
     config = function()
-      require "configs.lspconfig"
+      require("configs.lspconfig")
     end,
+  },
+
+  {
+    "nvim-treesitter/nvim-treesitter",
+    dependencies = {
+      "windwp/nvim-ts-autotag",
+      -- Setup autotag with default options.
+      opts = {},
+    },
+    opts = {
+      ensure_installed = {
+        "bash",
+        "html",
+        "javascript",
+        "json",
+        "lua",
+        "markdown",
+        "markdown_inline",
+        "python",
+        "query",
+        "regex",
+        "tsx",
+        "typescript",
+        "vim",
+        "yaml",
+      },
+    },
   },
 
   {
@@ -40,7 +67,7 @@ return {
     -- optional for icon support
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-      require("fzf-lua").setup {
+      require("fzf-lua").setup({
         { "telescope" },
         winopts = { fullscreen = false },
         actions = {
@@ -52,7 +79,7 @@ return {
             ["ctrl-t"] = require("fzf-lua.actions").file_tabedit,
           },
         },
-      }
+      })
     end,
   },
   {
