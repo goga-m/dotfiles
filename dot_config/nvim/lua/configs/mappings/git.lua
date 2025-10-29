@@ -40,5 +40,5 @@ end
 vim.api.nvim_set_keymap("n", "gv", ":lua GvdiffInBranch()<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "ge", ":lua GeditInBranch()<CR>", { noremap = true, silent = true })
 
-vim.api.nvim_set_keymap("n", "ggr", ":diffget RE<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "ggl", ":diffget LO<CR>", { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap("n", "ggr", ":diffget RE<CR>", { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap("n", "ggl", ":diffget LO<CR>", { noremap = true, silent = true })
