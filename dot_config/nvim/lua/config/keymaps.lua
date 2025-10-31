@@ -11,3 +11,17 @@ map("x", "p", "pgvy", { noremap = true, silent = true, desc = "Paste and reselec
 -- Half page navigation with ctrl-k/j
 map("n", "<C-S-j>", "<C-d>")
 map("n", "<C-S-k>", "<C-u>")
+
+-- Copy current filepath.
+map("n", "y<C-g>", '"+:let @+=expand("%:p")<CR>', { desc = "Copy file path" })
+
+-- Delete current buffer.
+map("n", "<leader>q", "<cmd>bdelete<cr>", { desc = "Delete buffer" })
+
+-- Keep cursor in place when you press * to search word under cursor
+map(
+  "n", -- mode: normal
+  "*", -- lhs
+  ":keepjumps normal! mi*`i<CR>", -- rhs
+  { noremap = true, silent = true }
+)
