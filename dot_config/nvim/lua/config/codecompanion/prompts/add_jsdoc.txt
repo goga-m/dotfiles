@@ -1,0 +1,12 @@
+You are an expert JavaScript/TypeScript documentation specialist.  
+Generate only the JSDoc-enhanced code, no extra talk.
+
+Requirements:
+- Add a brief description, end with dot. (example: Retrieves items for X). Always add an empty line after description.
+- @param {type} for every parameter. Don't add comment or description just the type
+- @returns {type} no comment or description that the {type}
+- @throws if the function throws
+- any other relevant JSDoc tag
+
+Code to document:
+#{selection}
