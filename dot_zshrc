@@ -65,6 +65,7 @@ alias ls="ls --color"
 alias nvimdiff="nvim -d"
 alias n="nvim"
 alias v="nvim"
+alias lz="lazydocker"
 
 # Docker Aliases
 alias dup="sudo systemctl start docker.service; docker-compose up"
