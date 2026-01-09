@@ -40,8 +40,12 @@ function M:pop_progress_handle(id)
 end
 
 function M:create_progress_handle(request)
+  -- Handle nil strategy with fallback
+  local strategy = request.data.strategy or "unknown"
+  local adapter_name = request.data.adapter and request.data.adapter.formatted_name or "unknown"
+  
   return progress.handle.create({
-    title = "󰭻 Requesting assistance (" .. request.data.strategy .. ")",
+    title = "󰭻 Requesting assistance (" .. strategy .. ")",
     message = "In progress...",
     lsp_client = {
       name = M:llm_role_title(request.data.adapter),
@@ -50,8 +54,12 @@ function M:create_progress_handle(request)
 end
 
 function M:llm_role_title(adapter)
+  if not adapter then
+    return "unknown"
+  end
+  
   local parts = {}
-  table.insert(parts, adapter.formatted_name)
+  table.insert(parts, adapter.formatted_name or "unknown")
   if adapter.model and adapter.model ~= "" then
     table.insert(parts, "(" .. adapter.model .. ")")
   end
