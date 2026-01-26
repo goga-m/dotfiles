@@ -16,6 +16,7 @@ return {
   keys = {
     { "<leader>ai", ":CodeCompanionActions<CR>", mode = { "n", "v" }, desc = "AI actions" },
     { "<leader>ac", ":CodeCompanionChat<CR>",    desc = "Open chat" },
+    { "<C-;>", ":CodeCompanionChat<CR>",    desc = "Open chat", mode = { "n", "v" },  },
   },
   opts = {
     adapters = {
