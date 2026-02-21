@@ -25,18 +25,3 @@ map(
   ":keepjumps normal! mi*`i<CR>", -- rhs
   { noremap = true, silent = true }
 )
-
--- Preserve yanked text, preventing it from being overridden by selections.
-vim.api.nvim_create_autocmd("TextYankPost", {
-  callback = function()
-    -- Store the yanked text in a variable that persists
-    local yanked_text = vim.fn.getreg('"')
-    vim.api.nvim_set_var("preserved_yank", yanked_text)
-  end,
-  group = vim.api.nvim_create_augroup("PreserveYank", { clear = true }),
-})
-
-map("n", "y", '"0y', { desc = "Yank to register 0" })
-vim.keymap.set("v", "y", '"0y', { desc = "Yank to register 0" })
-vim.keymap.set("n", "p", '"0p', { desc = "Paste from register 0" })
-vim.keymap.set("v", "p", '"0p', { desc = "Paste from register 0" })
