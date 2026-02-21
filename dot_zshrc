@@ -66,6 +66,7 @@ alias nvimdiff="nvim -d"
 alias n="nvim"
 alias v="nvim"
 alias lz="lazydocker"
+alias batm="bat --language=markdown"
 
 # Docker Aliases
 alias dup="sudo systemctl start docker.service; docker-compose up"
@@ -148,3 +149,34 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 # zstyle ':omz:update' frequency 13   # set update frequency (in days)
 
 source ~/.profile
+
+
+# AI
+alias "aif"="aichat -r %functions%"
+alias "aic"="aichat -c"
+alias "x"="aichat -e"
+alias ","="aichat"
+alias fabric="fabric-ai --disable-responses-api --stream"
+alias p='wl-paste'
+
+# Added by Hugging Face CLI installer
+export PATH="/home/pico/.local/bin:$PATH"
+
+# aichat shell integration
+# https://github.com/sigoden/aichat/wiki/Command-Line-Guide#shell-integration
+_aichat_zsh() {
+    if [[ -n "$BUFFER" ]]; then
+        local _old=$BUFFER
+        BUFFER+="⌛"
+        zle -I && zle redisplay
+        BUFFER=$(aichat -e "$_old")
+        zle end-of-line
+    fi
+}
+zle -N _aichat_zsh
+bindkey '\ee' _aichat_zsh
+
+. "$HOME/.local/share/../bin/env"
+
+
+alias "a"="OPENAI_API_BASE=http://0.0.0.0:8080/v1 OPENAI_API_KEY=test aider --dark-mode" 
