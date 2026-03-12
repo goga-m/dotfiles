@@ -8,6 +8,10 @@ bind status P !git push origin
 bind status p !git pull origin
 bind status w !git commit -m "wip"
 
-bind generic <C-r> !git revert --no-commit %commit
+# Remove untracked file from filesystem (and git's untracked list)
+bind status D ?rm -f %(file)
+
+# Revert commit with Ctrl+R
+bind main <Ctrl-R> ?git revert %(commit)
 
 set main-view-id = yes
