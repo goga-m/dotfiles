@@ -6,24 +6,31 @@
       "name": "llm.puff.lan",
       "options": {
         "baseURL": "http://0.0.0.0:8080/v1",
-        "includeUsage": true
       },
       "models": {
-        "Local": {
-          "name": "Local model",
-          "options": {
-            "temperature": 0.15,
-            "max_tokens": 4096,
-            "top_p": 0.95,
-            "frequency_penalty": 0.1,
-            "presence_penalty": 0.1
+        "LOCAL": {
+          "name": "LOCAL",
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+            ],
+            "output": [
+              "text"
+            ]
           }
         }
       }
     }
   },
-  "plugin": [
-    "@ramarivera/opencode-model-announcer"
-  ],
-  "autoupdate": true
+  "mcp": {
+    "chrome-devtools": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@latest",
+      ]
+    },
+  },
 }
