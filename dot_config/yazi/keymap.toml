@@ -2,7 +2,7 @@
 # Archiving with ouch
 # https://github.com/ndtoan96/ouch.yazi
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["C"]
 run = "plugin ouch --args=zip"
 desc = "Compress with ouch"
