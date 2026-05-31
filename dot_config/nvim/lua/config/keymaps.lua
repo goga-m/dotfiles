@@ -6,7 +6,7 @@ local map = LazyVim.safe_keymap_set
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jj", "<ESC>")
-map("x", "p", "pgvy", { noremap = true, silent = true, desc = "Paste and reselect pasted text" })
+-- map("x", "p", "pgvy", { noremap = true, silent = true, desc = "Paste and reselect pasted text" })
 
 -- Half page navigation with ctrl-k/j
 map("n", "<C-S-j>", "<C-d>")
