@@ -1,10 +1,13 @@
 # ============================================================================
 # Environment & PATH Configuration
 # ============================================================================
+#
+source ~/.profile
 
 # fnm (Fast Node Manager) setup
 export PATH=/home/$USER/.fnm:$PATH
 eval "$(fnm env --use-on-cd --version-file-strategy=recursive)"
+
 
 # pnpm (Package Manager) setup
 export PNPM_HOME="/home/$USER/.local/share/pnpm"
@@ -38,11 +41,15 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
+# Ensure 'pi' points to the pi-coding-agent, not pnpm init
+unalias pi 2>/dev/null
+# alias pi='/usr/bin/pi'
+
 # ============================================================================
 # Plugin Initialization
 # ============================================================================
 
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 bindkey ';;'  autosuggest-accept
 
 # ============================================================================
@@ -113,68 +120,7 @@ alias dls='function _dgrep() { echo "Docker containers"; docker ps -a | grep "$1
 alias ddown="sudo systemctl stop docker.socket; sudo systemctl stop docker.service"
 
 # ============================================================================
-# Aliases - AI/LLM
-# ============================================================================
-
-alias "aif"="aichat -r %functions%"
-alias "aic"="aichat -c"
-alias "x"="aichat -e"
-alias ","="aichat"
-alias fabric="fabric-ai --disable-responses-api --stream"
-
-# ============================================================================
-# Aliases - AI Models
-# ============================================================================
-
-export OPENCODE_ENABLE_EXA=1 
-
-alias "ai-qwen3.5-thinking"='toolbox run --container llama-vulkan-amdvlk -- llama-server \
-  --port 8080 \
-  -m ~/.cache/llama.cpp/muddler_Qwen3.5-35B-A3B-APEX-I-Quality.gguf \
-  --mmproj ~/.cache/llama.cpp/muddler_Qwen3.5-35B-A3B-APEX-mmproj-F16.gguf \
-  --alias QWEN_SMALL \
-  -ngl 999 \
-  --no-mmap \
-  --flash-attn on --fit on \
-  --ctx-size 202752 \
-  --ctx-checkpoints 8192 \
-  --cache-type-k q8_0 --cache-type-v q8_0 \
-  --flash-attn on --fit on \
-  --kv-unified \
-  --keep -1 \
-  -np 1 \
-  --jinja \
-  --temp 0.6 \
-  --top-p 0.95 \
-  --top-k 20 \
-  --min-p 0.05 \
-  --repeat-penalty 1.0 \
-  --presence-penalty 1.4 \
-  --checkpoint-every-n-tokens 2048 \
-  --chat-template-kwargs "{\"enable_thinking\": true}"'
-
-alias "ai-minimax-M2.5-thinking"='toolbox run --container llama-vulkan-amdvlk -- llama-server \
-  --port 8080 \
-  -m ~/.cache/llama.cpp/unsloth_MiniMax-M2.5-GGUF_UD-Q2_K_XL_MiniMax-M2.5-UD-Q2_K_XL-00001-of-00003.gguf \
-  --alias MINIMAX \
-  --host 0.0.0.0 \
-  -ngl 999 \
-  --no-mmap \
-  -fa 1 \
-  --ctx-size 65536 \
-  --ctx-checkpoints 8192 \
-  --cache-type-k f16 \
-  --cache-type-v f16 \
-  --jinja \
-  --swa-full \
-  -np 1 \
-  --temp 1 \
-  --top-p 0.95 \
-  --top-k 40 \
-  --min-p 0.00 \
-  --repeat-penalty 1.0 \
-  --checkpoint-every-n-tokens 2048 \
-  --chat-template-kwargs "{\"enable_thinking\": true}"'
+source ~/.config/zsh/ai.zsh
 
 # ============================================================================
 # Custom Functions
@@ -189,22 +135,6 @@ alias-fzf() {
 zle -N alias-fzf
 bindkey '^A' alias-fzf
 
-_aichat_zsh() {
-    if [[ -n "$BUFFER" ]]; then
-        local _old=$BUFFER
-        BUFFER+="⌛"
-        zle -I && zle redisplay
-        BUFFER=$(aichat -e "$_old")
-        zle end-of-line
-    fi
-}
-zle -N _aichat_zsh
-bindkey '\ee' _aichat_zsh
-
-# ============================================================================
 # Additional Setup
 # ============================================================================
 
-export PATH="/home/pico/.local/bin:$PATH"
-source ~/.profile
-. "$HOME/.local/share/../bin/env"
