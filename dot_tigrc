@@ -40,5 +40,8 @@ bind stage G ?git checkout %(commit) -- %(file)
 bind diff A !git checkout %(commit) -- %(file)
 
 
+# Copy commit hash (main/log views)
+bind main Y !@sh -c "echo -n %(commit) | wl-copy"
+
 # Copy filepath under highlighted line in any view.
 bind generic Y !@sh -c "echo -n %(file) | wl-copy"

@@ -1,3 +1,21 @@
+# ============================================================================
+# TheRock ROCm (default ROCm for Strix Halo / gfx1151)
+# pacman ROCm 7.2.3 was removed; therock is the sole ROCm stack.
+# CIRU's Qwen3.8-Flash-CIRU-STRIX-IU4 runtime links libamdhip64.so.7 (HIP 7.x),
+# so keep therock on the 7.x line (do NOT jump to ROCm 10.x without rebuilding).
+# Override THEROCK_ROOT to point at a different therock install.
+# ============================================================================
+
+: "${THEROCK_ROOT:=/home/pico/therock/7.15.0a20260718}"
+export ROCM_PATH="${THEROCK_ROOT}"
+export HIP_PATH="${THEROCK_ROOT}"
+export LD_LIBRARY_PATH="${THEROCK_ROOT}/lib:${LD_LIBRARY_PATH}"
+export PATH="${THEROCK_ROOT}/bin:${PATH}"
+
+# Print the active ROCm stack (for verifying therock is default):
+#   ai-rocm-env
+alias "ai-rocm-env"='echo "THEROCK_ROOT=$THEROCK_ROOT"; which rocminfo hipcc hipconfig; rocminfo 2>/dev/null | grep -m1 gfx1151; hipconfig --full 2>/dev/null | head -3'
+
 # Aliases - AI/LLM
 # ============================================================================
 
@@ -11,20 +29,24 @@ alias fabric="fabric-ai --disable-responses-api --stream"
 # Aliases - AI Models
 # ============================================================================
 
+# Qwen3.8-Flash-CIRU-STRIX-IU4 — required CIRU llama.cpp runtime (v1.1, gfx1151).
+# IU4 WMMA execution + FP8 PLE sidecar pager + Q8_0 MTP depth-3 speculative decode.
+# run-server.sh sources profiles/strix-halo-production.env (GGML_CUDA_Q41_MOE_FORCE_J=32,
+# GGML_QWEN4EXP_PLE_WORKERS=16, ROCBLAS_USE_HIPBLASLT=1) and applies the audited production flags.
+# model/ symlinks to the HF cache; MODEL_DIR is resolved from repo_root so cwd does not matter.
+alias "ai-qwen3.8-flash"='~/ai/Qwen3.8-Flash-CIRU-STRIX-IU4/scripts/ciru/run-server.sh'
+
 alias h='toolbox run -c hermes-box -- hermes'
 
 export OPENCODE_ENABLE_EXA=1 
 
-alias "ai-qwen3.5-local-llama"='~/temp/llama.cpp/build/bin/llama-server \
-  --port 8080 \
+alias "ai-qwen3.5-local-llama"='~/temp/strix-halo-llamacpp/vulkan/llama-server \
+  --port 18080 \
   -m ~/.cache/llama.cpp/fast_unsloth_Qwen3.5-35B-A3B-GGUF_Qwen3.5-35B-A3B-UD-Q4_K_XL.gguf \
-  --mmproj ~/.cache/llama.cpp/fast_unsloth_Qwen3.5-35B-A3B-GGUF_mmproj-BF16.gguf \
-  --alias QWEN_SMALL \
+  --alias LOCAL \
   -ngl 999 \
-  --no-mmap \
-  --flash-attn on --fit on \
+  --load-mode mmap \
   --ctx-size 202752 \
-  --ctx-checkpoints 8192 \
   --cache-type-k q8_0 --cache-type-v q8_0 \
   --flash-attn on --fit on \
   --kv-unified \
@@ -37,7 +59,6 @@ alias "ai-qwen3.5-local-llama"='~/temp/llama.cpp/build/bin/llama-server \
   --min-p 0.05 \
   --repeat-penalty 1.0 \
   --presence-penalty 1.4 \
-  --checkpoint-every-n-tokens 2048 \
   --chat-template-kwargs "{\"enable_thinking\": true}"'
 
 alias "ai-Qwen3.6-35B-A3B"='~/temp/llama.cpp/build/bin/llama-server \
@@ -148,7 +169,7 @@ alias "ai-Qwen3.6-35B-A3B-0xSero"='~/temp/llama.cpp/build/bin/llama-server \
   --repeat-penalty 1.05'
 
   alias "ai-Qwen3.6-27B-MTP"='~/temp/rocmfp4-llama/build-strix-rocmfp4/bin/llama-server \
-    -m ~/temp/rocmfp4-llama/model-ROCmFP4-STRIX_LEAN.gguf \
+    -m ~/.cache/llama.cpp/local-models/ROCmFP4-STRIX_LEAN.gguf \
     --port 8080 \
     -ngl 999 \
     -c 262144 \
@@ -209,7 +230,7 @@ alias "ai-Qwen3.6-35B-A3B-0xSero"='~/temp/llama.cpp/build/bin/llama-server \
     --alias LOCAL'
 
 alias "ai-qwen2.5-coder-3b"='~/temp/llama.cpp/build/bin/llama-server \
-  --port 8081 \
+  --port 18080 \
   -m ~/.cache/huggingface/hub/models--bartowski--Qwen2.5-Coder-3B-Instruct-GGUF/snapshots/7c137640ef0332dfedb229f2504c58d83ed4307a/Qwen2.5-Coder-3B-Instruct-Q6_K_L.gguf \
 
   --alias QWEN_CODER_3B \
@@ -229,8 +250,8 @@ alias "ai-qwen2.5-coder-3b"='~/temp/llama.cpp/build/bin/llama-server \
   --chat-template-kwargs "{}"'
 
 alias "ai-qwen2.5-coder-7b"='~/temp/llama.cpp/build/bin/llama-server \
-  --port 8082 \
-  -hf bartowski/Qwen2.5-Coder-7B-Instruct-GGUF Q5_K_M \
+  --port 18080 \
+  -hf bartowski/Qwen2.5-Coder-7B-Instruct-GGUF \
   --alias QWEN_CODER_7B \
   -ngl 999 \
   --no-mmap \
@@ -246,22 +267,6 @@ alias "ai-qwen2.5-coder-7b"='~/temp/llama.cpp/build/bin/llama-server \
   --min-p 0.05 \
   --repeat-penalty 1.1 \
   --chat-template-kwargs "{}"'
-
-alias "ai-lmf2"='~/temp/llama.cpp/build/bin/llama-server \
-  --port 8081 \
-  -m ~/.cache/huggingface/hub/models--LiquidAI--LFM2.5-8B-A1B-GGUF/snapshots/dfd5fdcad7a1c0d31473fb4ca443b8befbacddf0/LFM2.5-8B-A1B-Q8_0.gguf \
-  --alias LIQUID \
-  -ngl 999 \
-  -np 4 \
-  --ctx-size 32768 \
-  --batch-size 2048 \
-  --ubatch-size 1024 \
-  --flash-attn on \
-  --temp 0.7 \
-  --top-p 0.95 \
-  --min-p 0.05 \
-  --repeat-penalty 1.05 \
-  --chat-template-kwargs "{\"enable_thinking\":false}"'
 
 alias "ai-Qwen3.6-27B-CHADROCK"='~/temp/llama.cpp/build/bin/llama-server \
   --port 8080 \
@@ -483,7 +488,7 @@ alias "ai-strix"='~/temp/strix-halo-llamacpp/vulkan/llama-server \
 
 # Ornith-1.5 35B-A3B — recommended: temp=0.6, top_p=0.95
 alias "ai-ornith-1.5"='~/temp/strix-halo-llamacpp/vulkan/llama-server \
-  --port 18080 \
+  --port 8080 \
   --mmproj ~/.cache/huggingface/hub/models--ornith-ai--Ornith-1.5-35B-A3B-GGUF/snapshots/5ae357e3eaf951ae221e8d784c71a8a3cdb6aa5f/mmproj-Ornith-1.5-35B-BF16.gguf \
   -m ~/.cache/huggingface/hub/models--ornith-ai--Ornith-1.5-35B-A3B-GGUF/snapshots/5ae357e3eaf951ae221e8d784c71a8a3cdb6aa5f/Ornith-1.5-35B-Q4_K_M.gguf \
   --alias ORNITH_A3B \
@@ -552,7 +557,7 @@ alias "ai-ornith"=' GGML_VK_MMID_ROWLISTS=1 GGML_VK_MMID_SMALLN=1 GGML_VK_MMID_B
    GGML_VK_MMID_WAVE32=1 GGML_VK_MMID_F16B=1 GGML_VK_MMID_M128=1 \
    GGML_VK_FA_KV_CONTIG=1 \
   ~/temp/strix-halo-llamacpp/vulkan/llama-server \
-  --port 18080 \
+  --port 8080 \
   --mmproj ~/.cache/huggingface/hub/models--ornith-ai--Ornith-1.5-35B-A3B-GGUF/snapshots/5ae357e3eaf951ae221e8d784c71a8a3cdb6aa5f/mmproj-Ornith-1.5-35B-BF16.gguf \
   -m ~/.cache/huggingface/hub/models--ornith-ai--Ornith-1.5-35B-A3B-GGUF/snapshots/5ae357e3eaf951ae221e8d784c71a8a3cdb6aa5f/Ornith-1.5-35B-Q4_K_M.gguf \
   --alias ORNITH_A3B \
@@ -562,7 +567,7 @@ alias "ai-ornith"=' GGML_VK_MMID_ROWLISTS=1 GGML_VK_MMID_SMALLN=1 GGML_VK_MMID_B
   --ctx-checkpoints 8192 \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
-  --ctx-size 262144 \
+  --ctx-size 163840 \
   --batch-size 2048 \
   --ubatch-size 1024 \
   --image-min-tokens 1024 \
@@ -581,43 +586,6 @@ alias "ai-ornith"=' GGML_VK_MMID_ROWLISTS=1 GGML_VK_MMID_SMALLN=1 GGML_VK_MMID_B
   --min-p 0.05 \
   --repeat-penalty 1.05'
 
-
-
-# ai-ciru: 100% CIRU production profile for Qwen3.8-Flash-CIRU-STRIX-IU4.
-# Audited public profile — verbatim from docs/RUNNING.md + profiles/strix-halo-production.env.
-# Build: TheRock ROCm (gfx1151) at ~/ai/Qwen3.8-Flash-CIRU-STRIX-IU4/build-gfx1151/bin/llama-server
-# MODEL_DIR default = ~/.cache/huggingface (HF's download root); override with: MODEL_DIR=/path ai-ciru
-alias 'ai-ciru'=' \
-  MODEL_DIR="${MODEL_DIR:-$HOME/.cache/huggingface}" \
-  export GGML_CUDA_Q41_MOE_FORCE_J=32 \
-  export GGML_QWEN4EXP_PLE_WORKERS=16 \
-  export GGML_QWEN4EXP_PLE_STRICT_SHA=0 \
-  export ROCBLAS_USE_HIPBLASLT=1 \
-  export LD_LIBRARY_PATH=/home/pico/therock/7.15.0a20260718/lib:$LD_LIBRARY_PATH \
-  ~/ai/Qwen3.8-Flash-CIRU-STRIX-IU4/build-gfx1151/bin/llama-server \
-    --model "$MODEL_DIR/Qwen3.8-Flash-CIRU-STRIX-IU4.gguf" \
-    --alias Qwen3.8-Flash-CIRU-STRIX-IU4 \
-    --host 127.0.0.1 --port 8080 --jinja \
-    --ple-sidecar "$MODEL_DIR/ple" \
-    --ple-cache-mib 4096 \
-    --slot-save-path ~/ai/Qwen3.8-Flash-CIRU-STRIX-IU4/slot-state \
-    -ngl all -sm none --fit off \
-    -c 262144 -b 2048 -ub 512 --parallel 1 \
-    -t 8 -tb 8 -ctk f16 -ctv f16 -fa on \
-    --cont-batching \
-    --cache-prompt --cache-ram 8192 --cache-idle-slots \
-    --ctx-checkpoints 32 --checkpoint-min-step 8192 \
-    --metrics --slots \
-    --spec-type draft-mtp \
-    --spec-draft-model auto \
-    --spec-draft-ngl all --spec-draft-device ROCm0 \
-    --spec-draft-type-k q8_0 --spec-draft-type-v q8_0 \
-    --spec-draft-threads 8 --spec-draft-threads-batch 8 \
-    --spec-draft-n-max 3 --spec-draft-n-min 0 \
-    --spec-draft-p-min 0.0 --spec-draft-p-split 0.10'
-
-# Aliases - q38rocm (ROCmFP4 on Strix Halo)
-#
 alias 'ai-q38rocm'='~/temp/strix-halo-llamacpp/vulkan/llama-server \
     -m ~/q38rocm/Qwen3.8-27B-ROCmFP4-FAST.gguf \
     -dev Vulkan0 \

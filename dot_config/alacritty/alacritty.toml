@@ -76,3 +76,6 @@ style = "Regular"
 
 [window]
 padding = { x = 10, y = 8 }
+
+[terminal]
+osc52 = "CopyPaste"

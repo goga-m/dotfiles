@@ -1,10 +1,5 @@
 # See https://git-scm.com/docs/git-config
 [core]
-    pager = delta
-
-[interactive]
-    diffFilter = delta --color-only
-
 [alias]
 	co = checkout
 	br = branch
@@ -20,6 +15,7 @@
 	algorithm = histogram    # Clearer diffs on moved/edited lines
 	colorMoved = plain       # Highlight moved blocks in diffs
 	mnemonicPrefix = true    # More intuitive refs in diff output
+	tool = lumen
 [commit]
 	verbose = true           # Include diff comment in commit message template
 [column]
@@ -29,10 +25,27 @@
 [tag]
 	sort = -version:refname  # Sort version numbers as you would expect
 [rerere]
-	enabled = true           # Record and reuse conflict resolutions
 	autoupdate = true        # Apply stored conflict resolutions automatically
 [delta]
+    line-number = true
+    side-by-side = true
     navigate = true  # use n and N to move between diff sections
     dark = true      # or light = true, or omit for auto-detection
+
 [merge]
+	tool = ec
     conflictStyle = zdiff3
+
+[user]
+	email = 22020168+goga-m@users.noreply.github.com
+	name = goga-m
+[mergetool "ec"]
+	cmd = ec \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+[mergetool]
+	trustExitCode = true
+[difftool "lumen"]
+	cmd = lumen diff $LOCAL $REMOTE
+[difftool]
+	prompt = false
+[interactive]
+	diffFilter = lumen diff

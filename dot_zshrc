@@ -88,7 +88,10 @@ source /usr/share/fzf/key-bindings.zsh
 
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
-eval "$(atuin init zsh)"
+# --disable-ai: frees the `?` key (atuin binds it to its own NL search widget,
+# which fires on the first `?` typed into an empty buffer). We use `?`/`??` for
+# pi one-shots — see ~/.config/zsh/ai.zsh.
+eval "$(atuin init zsh --disable-ai)"
 # . "$HOME/.atuin/bin/env"
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
@@ -121,6 +124,7 @@ alias ddown="sudo systemctl stop docker.socket; sudo systemctl stop docker.servi
 
 # ============================================================================
 source ~/.config/zsh/ai.zsh
+source ~/.config/zsh/pi.zsh
 
 # ============================================================================
 # Custom Functions
@@ -138,3 +142,12 @@ bindkey '^A' alias-fzf
 # Additional Setup
 # ============================================================================
 
+
+eval $(thefuck --alias)
+export PATH="$PATH:$HOME/go/bin"
+
+# Added by the Hunk installer (https://hunk.dev)
+export PATH='/home/pico/.hunk/bin':"$PATH"
+
+# Rust/Cargo binaries
+export PATH="$HOME/.cargo/bin:$PATH"

@@ -37,3 +37,4 @@ export NVM_DIR="$HOME/.nvm"
 eval "$(atuin init bash)"
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init bash)"; fi
+export PATH="$PATH:$HOME/go/bin"
