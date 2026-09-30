@@ -1,4 +1,9 @@
 # See https://git-scm.com/docs/git-config
+
+[include]
+    path = ~/.config/git/config.local
+    optional = true
+
 [core]
 [alias]
 	co = checkout
@@ -36,9 +41,6 @@
 	tool = ec
     conflictStyle = zdiff3
 
-[user]
-	email = 22020168+goga-m@users.noreply.github.com
-	name = goga-m
 [mergetool "ec"]
 	cmd = ec \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
 [mergetool]
