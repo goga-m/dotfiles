@@ -1,13 +1,7 @@
 #!/bin/bash
 
-# DisplayLink is host-specific USB dock hardware. This script previously ran on
-# EVERY fresh machine, building AUR DKMS modules (evdi-dkms) that fail whenever
-# the running kernel has no matching headers -- which is exactly the case on
-# Omarchy >= 4.0.4, where the default kernel is the bespoke `linux-omarchy`
-# (linux-headers does not match it). The failure then cascades into
-# `systemctl enable displaylink.service` failing on a service that was never installed.
-#
-# Skip unless the hardware is actually plugged in.
+# Skip unless the DisplayLink dock is plugged in; evdi-dkms also fails on the
+# linux-omarchy kernel (no matching headers).
 if ! lsusb 2>/dev/null | grep -qi 'displaylink'; then
     echo "No DisplayLink device detected (USB vendor 0x17e9) - skipping."
     exit 0

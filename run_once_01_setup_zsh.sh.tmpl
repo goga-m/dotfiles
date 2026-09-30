@@ -15,11 +15,7 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosugges
 # Syntax highlighting
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
-# NOTE: NvChad intentionally NOT installed here. ~/.config/nvim is managed by
-# chezmoi (LazyVim-based, 32 files under dot_config/nvim). Cloning NvChad's
-# starter into that directory fails outright on a fresh machine:
-#   fatal: destination path '~/.config/nvim' already exists and is not an empty directory
-# and would clobber the chezmoi-managed config if the directory were empty.
+# NvChad not installed here: ~/.config/nvim is chezmoi-managed, so the clone would fail.
 
 # pnpm plugin for oh-my-zsh
 git clone --depth=1 https://github.com/ntnyq/omz-plugin-pnpm.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/pnpm
