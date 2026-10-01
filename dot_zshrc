@@ -5,7 +5,7 @@
 source ~/.profile
 
 # fnm (Fast Node Manager) setup
-export PATH="$HOME/.fnm:$PATH"
+export PATH=/home/$USER/.fnm:$PATH
 eval "$(fnm env --use-on-cd --version-file-strategy=recursive)"
 
 
@@ -123,10 +123,6 @@ alias p='wl-paste'
 alias dup="sudo systemctl start docker.service; docker-compose up"
 alias dls='function _dgrep() { echo "Docker containers"; docker ps -a | grep "$1"; echo "Docker images"; docker images | grep "$1" }; _dgrep'
 alias ddown="sudo systemctl stop docker.socket; sudo systemctl stop docker.service"
-
-# ============================================================================
-source ~/.config/zsh/ai.zsh
-source ~/.config/zsh/pi.zsh
 
 # ============================================================================
 # Custom Functions
