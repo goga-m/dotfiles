@@ -32,7 +32,7 @@ chezmoi forget ~/.bashrc # stop tracking (keeps the file)
 | Path | What it is |
 | --- | --- |
 | `dot_zshrc`, `dot_bashrc`, `dot_profile` | shell config |
-| `dot_config/{hypr,i3}` | window managers |
+| `dot_config/{hypr,i3}` | window managers (Hyprland ships both `.conf` and `.lua` — see below) |
 | `dot_config/alacritty`, `dot_wezterm.lua` | terminals |
 | `dot_config/{nvim,yazi,vifm}`, `dot_tigrc` | editors & file managers |
 | `dot_config/{git,starship.toml,zsh}` | git, prompt, zsh bits |
@@ -40,6 +40,44 @@ chezmoi forget ~/.bashrc # stop tracking (keeps the file)
 | `bin/` | personal scripts |
 | `run_once_*.sh` | one-shot setup (packages, zsh plugins, sound, DisplayLink) |
 | `run_onchange_after_*.tmpl` | re-runs when its content changes (systemd reload) |
+
+## Omarchy 3.x vs Omarchy 4 "quattro"
+
+The desktop host runs Omarchy 3.8 (hyprlang, `~/.local/share/omarchy`), while the
+VM in `~/vm/omarchy-quattro` runs Omarchy 4.0.4 "quattro" — package-backed
+(`omarchy-settings` → `/usr/share/omarchy`) and configured in **Lua**.
+
+Hyprland 0.55+ prefers `hyprland.lua` over `hyprland.conf` whenever both exist,
+so the `.conf` overrides are simply never read on quattro. Both override sets are
+kept side by side and chezmoi picks one per machine by looking for the quattro
+marker `/usr/share/omarchy/default/hypr/omarchy.lua` (see `.chezmoiignore`):
+
+| | Omarchy 3.x (host) | Omarchy 4 quattro (VM) |
+| --- | --- | --- |
+| entry | `hypr/hyprland.conf` | `hypr/hyprland.lua` |
+| overrides | `bindings.conf`, `tiling.conf`, `input.conf`, `autostart.conf` | `bindings.lua`, `input.lua`, `autostart.lua` |
+| defaults | `~/.local/share/omarchy/default/hypr/*.conf` | `/usr/share/omarchy/default/hypr/*.lua` |
+| API | `bind = SUPER, J, ...` | `o.bind("SUPER + J", ...)`, `hl.unbind(...)`, `hl.config{}` |
+
+Edit the pair that matches the machine you are changing — they are kept behaviourally
+in sync, not mechanically generated from each other.
+
+### Applying to the quattro VM
+
+```bash
+# from inside the guest (~/vm/omarchy-quattro/vm.sh boot, then ssh -p 2222 localhost)
+git clone <repo> && cd ~/.local/share/chezmoi && chezmoi init --apply goga-m
+# hyprland.lua / bindings.lua / ... already exist from the Omarchy installer, so
+# chezmoi will ask per file — answer `o` (overwrite), or run:
+chezmoi apply --force
+
+hyprctl reload && hyprctl configerrors        # must come back clean
+omarchy menu keybindings --print            # confirm the keymap
+```
+
+Bindings whose target app is not installed in the guest are skipped rather than
+left dead, so Omarchy's own default for that key survives. Install the app and
+re-apply to take it over.
 
 ## Notes
 
