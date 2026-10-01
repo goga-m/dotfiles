@@ -81,11 +81,17 @@ hl.unbind("SUPER + K")
 hl.unbind("SUPER + L")
 hl.unbind("SUPER + CTRL + K")
 
--- Focus, group-aware (matches the host's `hyprctl dispatch focusgroup`).
-o.bind("SUPER + H", "Focus left", "hyprctl dispatch focusgroup left")
-o.bind("SUPER + J", "Focus down", "hyprctl dispatch focusgroup down")
-o.bind("SUPER + K", "Focus up", "hyprctl dispatch focusgroup up")
-o.bind("SUPER + L", "Focus right", "hyprctl dispatch focusgroup right")
+-- Focus on hjkl, using the exact same dispatcher as the arrow keys
+-- (SUPER + LEFT/RIGHT/UP/DOWN below), so it behaves identically.
+--
+-- NOTE: the host's `hyprctl dispatch focusgroup <dir>` lines were never live --
+-- `focusgroup` is not a valid Hyprland dispatcher (`hyprctl dispatch focusgroup
+-- left` reports "Invalid dispatcher"). The host was really navigating with the
+-- older `movefocus` binds, so that is what is ported here.
+o.bind("SUPER + H", "Focus left", hl.dsp.focus({ direction = "l" }))
+o.bind("SUPER + J", "Focus down", hl.dsp.focus({ direction = "d" }))
+o.bind("SUPER + K", "Focus up", hl.dsp.focus({ direction = "u" }))
+o.bind("SUPER + L", "Focus right", hl.dsp.focus({ direction = "r" }))
 
 -- The quattro defaults that SUPER + J/K/L used to be, relocated.
 -- SUPER + CTRL + K replaces quattro's Herdr keybindings overlay.
