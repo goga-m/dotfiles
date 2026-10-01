@@ -141,7 +141,6 @@ bindkey '^A' alias-fzf
 # ============================================================================
 
 
-eval $(thefuck --alias)
 export PATH="$PATH:$HOME/go/bin"
 
 # Added by the Hunk installer (https://hunk.dev)
