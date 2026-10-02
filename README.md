@@ -1,92 +1,162 @@
 # dotfiles
 
-Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/). Target: **Arch Linux** (Wayland / Hyprland, plus i3).
+Personal dotfiles. This branch is a **proof of concept: everything managed with
+[mise](https://mise.jdx.dev/) instead of [chezmoi](https://www.chezmoi.io/)**.
+
+Target: **Arch Linux** (Wayland / Hyprland, plus i3). Requires mise **≥ 2026.7.4**
+(the release where `mise bootstrap` and `[dotfiles]` went stable). Developed and
+validated against **2026.9.9** from Arch `extra`.
+
+> **New here?** Read [MISE.md](./MISE.md) — the daily-use guide mapping
+> `chezmoi add` / `chezmoi apply` muscle memory onto mise.
 
 ## Install
 
 ```bash
-# 1. install chezmoi
-sudo pacman -S --needed chezmoi
+# 1. mise (Arch)
+sudo pacman -S --needed mise        # needs >= 2026.7.4; extra has 2026.9.9
 
-# 2. clone + apply in one step
-chezmoi init --apply goga-m
+# 2. clone, trust, bootstrap
+git clone <repo> ~/.local/share/chezmoi
+cd ~/.local/share/chezmoi
+mise trust .
+mise bootstrap
 ```
 
-That's it — `chezmoi init --apply` clones this repo into `~/.local/share/chezmoi` and applies everything.
+`mise bootstrap` prompts before mutating and uses `sudo` where a package or unit
+needs it — keep a terminal handy.
 
-Some `run_once_*` scripts run during the first apply and use `sudo` (packages, PipeWire, Rofi theme, oh-my-zsh), so keep a terminal handy for the password prompt.
+Preview first if you prefer:
+
+```bash
+mise bootstrap --dry-run
+```
 
 ## Day-to-day
 
 ```bash
-chezmoi update          # git pull + apply
-chezmoi diff            # see what would change
-chezmoi apply           # apply only
-chezmoi add ~/.config/foo/bar.toml   # start tracking a new file
-chezmoi edit ~/.zshrc   # edit the source file in $EDITOR
-chezmoi forget ~/.bashrc # stop tracking (keeps the file)
+mise dot diff                    # what would change
+mise dot apply                   # apply just the files
+mise dot add --changed           # capture live edits back (chezmoi re-add)
+mise bootstrap                   # apply everything
+mise bootstrap status            # whole-machine status
+git pull && mise bootstrap       # chezmoi update
 ```
 
-## What's inside
+Full list in [MISE.md](./MISE.md).
+
+## Layout
 
 | Path | What it is |
 | --- | --- |
-| `dot_zshrc`, `dot_bashrc`, `dot_profile` | shell config |
-| `dot_config/{hypr,i3}` | window managers (Hyprland ships both `.conf` and `.lua` — see below) |
-| `dot_config/alacritty`, `dot_wezterm.lua` | terminals |
-| `dot_config/{nvim,yazi,vifm}`, `dot_tigrc` | editors & file managers |
-| `dot_config/{git,starship.toml,zsh}` | git, prompt, zsh bits |
-| `dot_config/systemd/` | user services (udiskie, rofi-clipboard) |
-| `bin/` | personal scripts |
-| `run_once_*.sh` | one-shot setup (packages, zsh plugins, sound, DisplayLink) |
-| `run_onchange_after_*.tmpl` | re-runs when its content changes (systemd reload) |
+| `mise.toml` | the whole machine: tools, packages, env, dotfiles, systemd units, tasks |
+| `mise.omarchy4.toml` | overlay for Omarchy 4 "quattro" (Lua hypr configs) |
+| `dotfiles/` | the sources, mirroring `$HOME` paths 1:1 |
+| `mise-tasks/` | file-tasks for the parts that stay imperative |
+| `MISE.md` | daily-use guide |
+| `docs/mise-research.md` | the chezmoi→mise capability research this branch came out of |
+
+`dotfiles/` replaces chezmoi's `dot_` / `dot_config_` filename encoding — mise
+mirrors real `$HOME` paths, and every entry is declared explicitly in
+`[dotfiles]`. That allow-list is the replacement for `.chezmoiignore`: repo-only
+files simply never get an entry.
+
+## What replaced what
+
+| was | now |
+| --- | --- |
+| `run_once_00_install_packages_arch.sh` (~200 lines: 28 pkgs + conflict resolver) | `[bootstrap.packages]` (`pacman:` + `aur:`) |
+| `fnm install 22` + `npm i -g pnpm typescript …` | `[tools] node` + `npm:` tools |
+| `chsh -s /usr/bin/zsh` | `[bootstrap.user].login_shell` |
+| `run_once_01` plugin clones | `[bootstrap.repos]` |
+| `run_once_02` rofi theme clone + copy | vendored at `dotfiles/.config/rofi/config.rasi` |
+| `run_once_03` pipewire packages | `[bootstrap.packages]` |
+| `run_once_03` `usermod -aG audio` | `[bootstrap.users]` (commented out — see below) |
+| `run_once_05_displaylink.sh` | `mise run displaylink` |
+| `run_once_06_omarchy_session.sh` | `[bootstrap.repos]` + `mise run omarchy-session` |
+| `dot_config/systemd/user/*.service` + both `run_onchange_after_apply-systemd-*` | `[bootstrap.linux.systemd.units.*]` |
+| `.chezmoiignore` | the `[dotfiles]` allow-list |
+| `run_onchange_*` freshness | `outputs = { auto = true }` (keyed on a hash of the task definition) |
 
 ## Omarchy 3.x vs Omarchy 4 "quattro"
 
-The desktop host runs Omarchy 3.8 (hyprlang, `~/.local/share/omarchy`), while the
-VM in `~/vm/omarchy-quattro` runs Omarchy 4.0.4 "quattro" — package-backed
-(`omarchy-settings` → `/usr/share/omarchy`) and configured in **Lua**.
+The desktop host runs Omarchy 3.8 (hyprlang, `~/.local/share/omarchy`), while
+the VM runs Omarchy 4.0.4 "quattro" — package-backed (`omarchy-settings` →
+`/usr/share/omarchy`) and configured in **Lua**.
 
 Hyprland 0.55+ prefers `hyprland.lua` over `hyprland.conf` whenever both exist,
-so the `.conf` overrides are simply never read on quattro. Both override sets are
-kept side by side and chezmoi picks one per machine by looking for the quattro
-marker `/usr/share/omarchy/default/hypr/omarchy.lua` (see `.chezmoiignore`):
+so only one set may be deployed per machine.
 
 | | Omarchy 3.x (host) | Omarchy 4 quattro (VM) |
 | --- | --- | --- |
 | entry | `hypr/hyprland.conf` | `hypr/hyprland.lua` |
-| overrides | `bindings.conf`, `tiling.conf`, `input.conf`, `autostart.conf` | `bindings.lua`, `input.lua`, `autostart.lua` |
+| overrides | `bindings.conf`, `tiling.conf`, `input.conf`, `autostart.conf`, `workspaces.conf` | `bindings.lua`, `input.lua`, `autostart.lua` |
 | defaults | `~/.local/share/omarchy/default/hypr/*.conf` | `/usr/share/omarchy/default/hypr/*.lua` |
 | API | `bind = SUPER, J, ...` | `o.bind("SUPER + J", ...)`, `hl.unbind(...)`, `hl.config{}` |
+| **selected by** | `mise.toml` (the default) | `mise.omarchy4.toml` via the `omarchy4` profile |
 
-Edit the pair that matches the machine you are changing — they are kept behaviourally
-in sync, not mechanically generated from each other.
-
-### Applying to the quattro VM
+chezmoi picked with `{{ if stat "/usr/share/omarchy/default/hypr/omarchy.lua" }}`.
+mise's `[dotfiles]` `source` values are **not templated** and `variants` select
+on os/arch/profile only — both machines are `linux-x64`, so it becomes one line
+of per-machine setup instead:
 
 ```bash
-# from inside the guest (~/vm/omarchy-quattro/vm.sh boot, then ssh -p 2222 localhost)
-git clone <repo> && cd ~/.local/share/chezmoi && chezmoi init --apply goga-m
-# hyprland.lua / bindings.lua / ... already exist from the Omarchy installer, so
-# chezmoi will ask per file — answer `o` (overwrite), or run:
-chezmoi apply --force
-
-hyprctl reload && hyprctl configerrors        # must come back clean
-omarchy menu keybindings --print            # confirm the keymap
+# on a quattro machine, once
+echo 'env = ["omarchy4"]' > ~/.config/mise/miserc.local.toml
+# or one-off
+mise -E omarchy4 bootstrap
 ```
 
-Bindings whose target app is not installed in the guest are skipped rather than
-left dead, so Omarchy's own default for that key survives. Install the app and
-re-apply to take it over.
+The `.conf` files stay on disk under quattro (mise 2026.9.9 has no
+`mode = "absent"`), but Hyprland ignores them when `hyprland.lua` is present —
+same practical outcome as chezmoi's ignore.
+
+Edit whichever pair matches the machine you are changing; they are kept
+behaviourally in sync, not mechanically generated from each other.
 
 ## Notes
 
-- **Machine-specific files are intentionally ignored** (see `.chezmoiignore`): `hypr/monitors.conf`, `vifm/vifminfo.json`, editor `.git` dirs, etc. Create them by hand per machine.
-- **DisplayLink** (`run_once_05_displaylink.sh`) self-skips unless a DisplayLink dock is detected on USB.
-- **Re-running a `run_once_*` script**: chezmoi records them in its state DB.
+- **Machine-specific files are intentionally undeclared**: `hypr/monitors.conf`,
+  `hypr/monitors.lua`, `vifm/vifminfo.json`, `aichat/config.yaml`,
+  `opencode/opencode.json`. Create them by hand per machine — mise never touches
+  what has no `[dotfiles]` entry.
+- **`audio` group is commented out.** The old script did `usermod -aG audio`.
+  mise manages membership from the user side (`[bootstrap.users.pico] groups =
+  ["audio"]`), but `pico` is already in `audio` on this host, so enabling it
+  would make your login account declaratively managed for no gain. Uncomment only
+  after `mise bootstrap accounts apply --dry-run` reads clean. **Never** set
+  `exclusive_groups = true` — it strips every membership not listed.
+- **`mise bootstrap --yes` skips mise's prompts but does not supply sudo
+  credentials.**
+- **Arch + version pins don't mix.** Arch ships only the latest of each package,
+  so pinned `pacman:`/`aur:` entries are skipped with a warning. Use `"latest"`.
+- **Don't rely on `mise bootstrap packages upgrade` on Arch** — it is a partial
+  upgrade, which Arch does not support. Run `sudo pacman -Syu`.
+- **Directory copies are additive.** Delete a source file and the deployed copy
+  stays behind. `mise dot status` won't flag it.
 
-  ```bash
-  chezmoi state delete-bucket --bucket=scripts   # forget all, then:
-  chezmoi apply
-  ```
-- **Not managed here**: language runtime versions. Install [`mise`](https://mise.jdx.dev/) and keep `~/.config/mise/config.toml` for that.
+## Validation performed
+
+Against mise 2026.9.9 in an isolated `$HOME`:
+
+- config parses with **0 unknown-field warnings**
+- `mise bootstrap plan` resolves all 27 packages
+- `mise bootstrap --dry-run` verified **non-mutating** (nothing created, including by the bootstrap task)
+- `mise bootstrap --only dotfiles` deployed **92 files**; exec bits preserved; `dot_gitignore` → `.gitignore` correct
+- drift detection produces proper unified diffs; `add --changed` capture direction verified
+- tools resolve: `node@22.23.3`, `pnpm@12.8.1`, `pandoc@3.12`, LSP packages
+- `omarchy4` profile verified to layer the `.lua` set
+- systemd units generate the correct `daemon-reload` / `enable` / `restart` sequence
+
+Known gaps found during validation are listed in [MISE.md §11](./MISE.md).
+
+## Rolling back
+
+This is a branch. `master` still has the working chezmoi setup:
+
+```bash
+git checkout master
+```
+
+chezmoi leaves ordinary files behind, so nothing needs unwinding beyond switching
+back and running `chezmoi apply`.

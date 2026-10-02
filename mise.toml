@@ -1,0 +1,263 @@
+# ===========================================================================
+# dotfiles — managed with mise (PoC replacing chezmoi)
+# ===========================================================================
+#
+# Layout
+#   mise.toml              this file — always loaded when you run mise from here
+#   mise.omarchy4.toml     overlay for Omarchy 4 "quattro" (Lua hypr configs)
+#   dotfiles/              the sources, mirroring $HOME paths 1:1
+#   mise-tasks/            file-tasks for the imperative leftovers
+#
+# Run everything from this directory:
+#   mise bootstrap --dry-run     preview
+#   mise bootstrap             apply
+#   mise bootstrap status      what differs
+#
+# Machine selection: this file describes the Omarchy **3.x** host. On an
+# Omarchy 4 quattro box, activate the overlay once per machine:
+#   echo 'env = ["omarchy4"]' > ~/.config/mise/miserc.local.toml
+# (or export MISE_ENV=omarchy4). See mise.omarchy4.toml.
+#
+# --------------------------------------------------------------------------
+# Settings
+# --------------------------------------------------------------------------
+[settings]
+# "copy" keeps chezmoi semantics: the target is a real file, this repo is the
+# source of truth, and `mise bootstrap dotfiles apply` overwrites target edits.
+# Capture live edits back with `mise dot add --changed`.
+# Set this to "symlink" if you'd rather have stow-style links.
+dotfiles.default_mode = "copy"
+
+# --------------------------------------------------------------------------
+# Dev toolchain — replaces fnm + `npm install -g`
+# --------------------------------------------------------------------------
+# mise installs node 22 and the global npm packages as managed tools. No fnm,
+# no PNPM_HOME juggling, no `unalias pi` workaround: mise's shim dir is the
+# only thing on PATH.
+[tools]
+node = "22"
+"npm:pnpm" = "latest"
+"npm:typescript" = "latest"
+"npm:typescript-language-server" = "latest"
+"npm:vscode-langservers-extracted" = "latest"
+
+# pandoc lives in [tools] rather than [bootstrap.packages] because Arch's
+# official repos don't carry it (the old script fell through to the AUR).
+# mise pulls the upstream GitHub release directly.
+pandoc = "latest"
+
+# --------------------------------------------------------------------------
+# Environment — replaces the export blocks in .zshrc / .profile
+# --------------------------------------------------------------------------
+# mise prepends its own shim dir to PATH automatically; `_.path` appends
+# directories for things installed outside mise.
+[env]
+EDITOR = "nvim"
+_.path = ["~/.local/bin", "~/go/bin", "~/.cargo/bin"]
+
+# --------------------------------------------------------------------------
+# Login shell — replaces the chsh call in run_once_01_setup_zsh.sh
+# --------------------------------------------------------------------------
+[bootstrap.user]
+login_shell = "/usr/bin/zsh"
+
+# ===========================================================================
+# Host packages — replaces run_once_00 / run_once_02 / run_once_03
+# ===========================================================================
+# "latest" accepts an already-installed version: `apply` installs what is
+# missing and does NOT upgrade on every run. Use
+# `mise bootstrap packages upgrade` for that — though on Arch you should
+# prefer a plain `sudo pacman -Syu` (mise's upgrade is a partial upgrade,
+# which Arch does not support).
+#
+# Arch carries only the latest of each package, so do NOT pin versions here:
+# pinned pacman:/aur: entries are skipped with a warning.
+[bootstrap.packages]
+# --- fonts ---------------------------------------------------------------
+"pacman:ttf-jetbrains-mono" = "latest"
+"pacman:ttf-jetbrains-mono-nerd" = "latest"
+
+# --- shell / terminal ----------------------------------------------------
+"pacman:zsh" = "latest"
+"pacman:alacritty" = "latest"
+
+# --- CLI tools -----------------------------------------------------------
+"pacman:atuin" = "latest"
+"pacman:tig" = "latest"
+"pacman:yazi" = "latest"
+"pacman:zoxide" = "latest"
+"pacman:7zip" = "latest"
+"pacman:ncdu" = "latest"
+"pacman:gum" = "latest"
+"pacman:aichat" = "latest"
+"pacman:ueberzugpp" = "latest"          # image preview in yazi/vifm
+"pacman:nwg-displays" = "latest"       # wayland display management
+"pacman:wl-clipboard" = "latest"       # wl-copy / wl-paste
+
+# --- prompt --------------------------------------------------------------
+"pacman:starship" = "latest"
+
+# --- removable media -----------------------------------------------------
+"pacman:udiskie" = "latest"
+
+# --- browsers ------------------------------------------------------------
+"pacman:firefox" = "latest"
+"aur:google-chrome" = "latest"
+"aur:brave-bin" = "latest"
+
+# --- rofi + clipboard manager (was run_once_02) --------------------------
+"pacman:rofi" = "latest"
+"pacman:cliphist" = "latest"
+
+# --- audio (was run_once_03) ---------------------------------------------
+"pacman:pipewire" = "latest"
+"pacman:pipewire-pulse" = "latest"
+"pacman:pipewire-alsa" = "latest"
+"pacman:wireplumber" = "latest"
+"pacman:pavucontrol" = "latest"
+
+# --------------------------------------------------------------------------
+# Groups — replaces `usermod -aG audio` from run_once_03
+# --------------------------------------------------------------------------
+# mise manages membership from the USER side, not the group side (there is no
+# `members` key on [bootstrap.groups]). The faithful form is:
+#
+#   [bootstrap.users.pico]
+#   group  = "pico"      # primary group (required for present users)
+#   groups = ["audio"]   # supplementary; only ADDS missing ones by default
+#
+# LEFT COMMENTED OUT ON PURPOSE. This makes your login account a declaratively
+# managed account driven through shadow-utils, and `pico` is already in `audio`
+# on this machine (verified: groups=...996(audio)...), so it buys nothing here.
+# Uncomment only after `mise bootstrap accounts apply --dry-run` reads clean.
+# Do NOT set `exclusive_groups = true` — that would strip every membership not
+# listed, including wheel/docker/video.
+
+# ===========================================================================
+# Git checkouts — replaces the git clone logic scattered across run_once_*
+# ===========================================================================
+# mise clones what is missing and only updates a checkout when the worktree is
+# clean and the origin matches. `mise bootstrap repos update` fast-forwards.
+[bootstrap.repos]
+# oh-my-zsh custom plugins (were cloned by run_once_01)
+"~/.oh-my-zsh/custom/plugins/fzf-tab" = { url = "https://github.com/Aloxaf/fzf-tab" }
+"~/.oh-my-zsh/custom/plugins/zsh-autosuggestions" = { url = "https://github.com/zsh-users/zsh-autosuggestions" }
+"~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" = { url = "https://github.com/zsh-users/zsh-syntax-highlighting.git" }
+"~/.oh-my-zsh/custom/plugins/pnpm" = { url = "https://github.com/ntnyq/omz-plugin-pnpm.git" }
+
+# omarchy-session (was cloned + installed by run_once_06)
+"~/.local/share/omarchy-session/src" = { url = "https://github.com/dataforxyz/omarchy-session" }
+
+# ===========================================================================
+# Dotfiles — replaces the whole chezmoi source tree
+# ===========================================================================
+# Every entry is explicit (mise's [dotfiles] table is an allow-list, so
+# repo-only files like this mise.toml never need an ignore entry — that is
+# .chezmoiignore's replacement).
+#
+# Sources are relative to this file. Targets are the real paths in $HOME.
+[dotfiles]
+
+# --- shell ---------------------------------------------------------------
+"~/.zshrc" = { source = "dotfiles/.zshrc" }
+"~/.bashrc" = { source = "dotfiles/.bashrc" }
+"~/.profile" = { source = "dotfiles/.profile" }
+"~/.config/zsh" = { source = "dotfiles/.config/zsh" }
+
+# --- terminal ------------------------------------------------------------
+"~/.wezterm.lua" = { source = "dotfiles/.wezterm.lua" }
+"~/.config/alacritty" = { source = "dotfiles/.config/alacritty" }
+
+# --- git -----------------------------------------------------------------
+"~/.config/git" = { source = "dotfiles/.config/git" }
+
+# --- prompt --------------------------------------------------------------
+"~/.config/starship.toml" = { source = "dotfiles/.config/starship.toml" }
+
+# --- editors / file managers ---------------------------------------------
+"~/.config/nvim" = { source = "dotfiles/.config/nvim" }
+"~/.tigrc" = { source = "dotfiles/.tigrc" }
+"~/.config/vifm" = { source = "dotfiles/.config/vifm" }
+"~/.config/yazi" = { source = "dotfiles/.config/yazi" }
+
+# --- window managers -----------------------------------------------------
+"~/.config/i3" = { source = "dotfiles/.config/i3" }
+
+# Hyprland: the .conf set below is for Omarchy 3.x. On Omarchy 4 quattro the
+# Lua set in mise.omarchy4.toml takes over instead — Hyprland 0.55+ prefers
+# hyprland.lua over hyprland.conf whenever both exist, so deploying both would
+# be wrong. (chezmoi picked with `stat()`; [dotfiles] sources are not
+# templated, so this is done with a mise profile instead.)
+"~/.config/hypr/hyprland.conf" = { source = "dotfiles/.config/hypr/hyprland.conf" }
+"~/.config/hypr/bindings.conf" = { source = "dotfiles/.config/hypr/bindings.conf" }
+"~/.config/hypr/input.conf" = { source = "dotfiles/.config/hypr/input.conf" }
+"~/.config/hypr/tiling.conf" = { source = "dotfiles/.config/hypr/tiling.conf" }
+"~/.config/hypr/workspaces.conf" = { source = "dotfiles/.config/hypr/workspaces.conf" }
+"~/.config/hypr/autostart.conf" = { source = "dotfiles/.config/hypr/autostart.conf" }
+# monitors.conf is machine-specific — deliberately not declared here. Create it
+# by hand per machine; mise will never touch it.
+
+# dracula rofi theme — the old run_once_02 cloned the repo to a temp dir and
+# copied one file out of it. Vendored instead: pointing a [dotfiles] entry at a
+# path that [bootstrap.repos] creates makes `--dry-run` fail (the clone has not
+# happened yet), and the old script only ever copied it once anyway.
+# Provenance: https://github.com/dracula/rofi  theme/config1.rasi @ main
+# Refresh with:
+#   curl -fsSL -o dotfiles/.config/rofi/config.rasi \
+#     https://raw.githubusercontent.com/dracula/rofi/main/theme/config1.rasi
+"~/.config/rofi/config.rasi" = { source = "dotfiles/.config/rofi/config.rasi" }
+
+# ===========================================================================
+# systemd user units — replaces the hand-written unit files AND both
+# run_onchange_after_apply-systemd-*.sh scripts.
+# ===========================================================================
+# `apply` rewrites changed units, runs `systemctl --user daemon-reload`,
+# enables per `wanted_by`, and restarts when `start = true`. That is exactly
+# what the two run_onchange scripts did by hand.
+#
+# IMPORTANT: mise writes these as dev.mise.<name>.service. The old
+# chezmoi-installed udiskie.service / omarchy-session-autosave.service must be
+# removed first or you end up with two enabled copies. See MISE.md step 2.
+#
+# Not portable: the old unit had LogLevelMax=warning. mise's unit schema has no
+# key for it, so that setting is dropped.
+[bootstrap.linux.systemd.units.udiskie]
+description = "udiskie mount daemon"
+type = "simple"
+exec_start = "/usr/bin/udiskie --no-notify --smart-tray"
+after = ["graphical-session.target"]
+wanted_by = ["graphical-session.target"]
+
+[bootstrap.linux.systemd.units.omarchy-session-autosave]
+description = "omarchy-session workspace autosave loop"
+type = "simple"
+exec_start = "~/.local/bin/omarchy-session autosave-loop"
+# KNOWN LOSS: the old unit had `PartOf=graphical-session.target` so the loop
+# stopped *with* the session. mise 2026.9.9 does not implement `part_of` (nor
+# `binds_to`, `before`, `conflicts`, `exec_start_pre/_post`, `exec_stop_post`)
+# even though the docs list them — verified against the binary. The unit still
+# starts with the session via wanted_by, and systemd kills user services at
+# logout, so the practical gap is only "stops when the graphical session ends
+# but the user session survives". See MISE.md for the hand-written-unit
+# workaround if you need exact parity.
+after = ["graphical-session.target"]
+restart = "on-failure"
+restart_sec = "15"
+nice = 10
+wanted_by = ["graphical-session.target"]
+
+# ===========================================================================
+# Tasks — the bits that stay imperative
+# ===========================================================================
+# File tasks in mise-tasks/ are picked up automatically by filename.
+# `mise run <name>`, `mise tasks ls` to list them.
+#
+# `mise bootstrap` runs a task named `bootstrap` as its final step. It can
+# run again on every bootstrap, so everything it calls must be safe to repeat.
+[tasks.bootstrap]
+description = "final step of `mise bootstrap`: zsh plugins + omarchy-session"
+# run-on-change semantics: `outputs = { auto = true }` keys freshness on a
+# hash of this task definition, so it re-runs when you edit it — the same
+# contract chezmoi's run_onchange_* gave you.
+outputs = { auto = true }
+run = ["mise run zsh-setup", "mise run omarchy-session"]
