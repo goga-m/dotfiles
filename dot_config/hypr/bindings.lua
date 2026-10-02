@@ -99,11 +99,12 @@ o.bind("SUPER + CTRL + J", "Toggle window split", hl.dsp.layout("togglesplit"))
 o.bind("SUPER + CTRL + K", "Keybindings", "omarchy-menu-keybindings")
 o.bind("SUPER + N", "Toggle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
 
--- Move the focused window.
-o.bind("SUPER + SHIFT + H", "Move window left", "hyprctl dispatch movewindow l")
-o.bind("SUPER + SHIFT + J", "Move window down", "hyprctl dispatch movewindow d")
-o.bind("SUPER + SHIFT + K", "Move window up", "hyprctl dispatch movewindow u")
-o.bind("SUPER + SHIFT + L", "Move window right", "hyprctl dispatch movewindow r")
+-- Move the focused window. Typed dispatcher (same as the old `movewindow l/d/u/r`)
+-- so it runs in-compositor instead of shelling out to hyprctl per keypress.
+o.bind("SUPER + SHIFT + H", "Move window left", hl.dsp.window.move({ direction = "left" }))
+o.bind("SUPER + SHIFT + J", "Move window down", hl.dsp.window.move({ direction = "down" }))
+o.bind("SUPER + SHIFT + K", "Move window up", hl.dsp.window.move({ direction = "up" }))
+o.bind("SUPER + SHIFT + L", "Move window right", hl.dsp.window.move({ direction = "right" }))
 
 -- Join the group next door. SUPER + ALT + UP/DOWN already do this by default.
 o.bind("SUPER + ALT + H", "Move window to group on left", hl.dsp.window.move({ into_group = "l" }))
