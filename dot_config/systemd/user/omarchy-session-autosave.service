@@ -1,0 +1,19 @@
+[Unit]
+Description=omarchy-session workspace autosave loop
+Documentation=https://github.com/dataforxyz/omarchy-session
+# PartOf so the loop is stopped with the session, not just ordered after it.
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/omarchy-session autosave-loop
+# The loop writes one snapshot per hour and keeps the latest 48 in
+# ~/.local/state/omarchy-session/autosaves.
+Restart=on-failure
+RestartSec=15
+Nice=10
+LogLevelMax=warning
+
+[Install]
+WantedBy=graphical-session.target

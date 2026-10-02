@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# omarchy-session — save/restore Hyprland workspace layouts.
+# https://github.com/dataforxyz/omarchy-session
+#
+# Installed from a git checkout kept at ~/.local/share/omarchy-session/src by
+# upstream's own installer, so the Super+Space "Workspace Sessions" launcher
+# entry, the hicolor icon set and the `ws` / `restore-workspace` aliases stay
+# exactly as upstream ships them instead of being re-implemented here.
+#
+# The upstream installer is deliberately conservative: it only refreshes those
+# shortcuts when they are missing or already managed by omarchy-session, so an
+# unrelated `ws` on some other host is left alone (no --force).
+#
+# The agent-session integrations (Pi extension, Claude Code hooks, OpenCode
+# plugin) are intentionally NOT installed — restore then falls back to each
+# agent's own session picker. See the note at the bottom to turn them on.
+#
+# Re-run this to update the checkout and reinstall:
+#   chezmoi state delete-bucket --bucket=scripts && chezmoi apply
+
+REPO_URL="https://github.com/dataforxyz/omarchy-session"
+CHECKOUT="$HOME/.local/share/omarchy-session/src"
+
+# The whole tool drives Hyprland through hyprctl — pointless without it.
+if ! command -v hyprctl >/dev/null 2>&1; then
+  echo "hyprctl not found (no Hyprland on this machine) - skipping omarchy-session."
+  exit 0
+fi
+
+if [ -d "$CHECKOUT/.git" ]; then
+  echo "== updating $CHECKOUT"
+  git -C "$CHECKOUT" pull --ff-only || \
+    echo "warning: could not update $CHECKOUT - reinstalling the copy already on disk"
+else
+  echo "== cloning $REPO_URL -> $CHECKOUT"
+  mkdir -p "$(dirname "$CHECKOUT")"
+  if ! git clone "$REPO_URL" "$CHECKOUT"; then
+    echo "!! clone failed - skipping omarchy-session"
+    exit 0
+  fi
+fi
+
+echo "== installing (upstream installer, copy mode)"
+if ! "$CHECKOUT/scripts/install-omarchy-session.sh"; then
+  echo "!! omarchy-session installer failed"
+  exit 0
+fi
+
+# Optional: authoritative live session IDs for Pi / Claude Code / OpenCode.
+# This rewrites ~/.claude/settings.json (backed up first) and adds an OpenCode
+# plugin, so it is opt-in:
+#   "$CHECKOUT/scripts/install-agent-integrations.py" --pi --claude --opencode
+
+echo
+echo "Installed. Check it with:  ws st && ws deps"
+echo "Autosave service:        systemctl --user status omarchy-session-autosave.service"
