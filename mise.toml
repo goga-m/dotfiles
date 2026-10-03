@@ -227,7 +227,8 @@ wanted_by = ["graphical-session.target"]
 # ===========================================================================
 # Tasks
 # ===========================================================================
-# File tasks in mise-tasks/ are discovered by filename. `mise tasks ls` lists
+# File tasks in tasks/ (that is, ~/.config/mise/tasks/) are discovered by
+# filename. `mise tasks ls` lists
 # them. `mise bootstrap` runs a task named `bootstrap` as its final step, and
 # may run it again on later bootstraps, so everything it calls must be safe to
 # repeat.

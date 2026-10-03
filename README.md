@@ -6,13 +6,23 @@ Arch Linux (Hyprland / i3), managed by mise.
 
 ```bash
 sudo pacman -S --needed git mise
-mise bootstrap --adopt https://github.com/<you>/dotfiles
+git clone https://github.com/goga-m/dotfiles ~/.config/mise
+mise bootstrap
 ```
 
 Log out, log back in. That's the install.
 
-**If adoption stops and says files conflict** (the machine already has a
-`~/.zshrc` or similar that differs from the repo):
+**If `~/.config/mise` already exists** (it does as soon as mise has run once)
+and isn't a git checkout, the clone will refuse. Move it aside first:
+
+```bash
+mv ~/.config/mise ~/.config/mise.bak
+git clone https://github.com/goga-m/dotfiles ~/.config/mise
+mise bootstrap
+```
+
+**If bootstrap stops on conflicting files** — the machine already has a
+`~/.zshrc` that differs from the repo's version:
 
 ```bash
 mise dot pull --take-remote-all
@@ -28,13 +38,24 @@ mise bootstrap
 
 ## Changing anything
 
-Edit `~/.config/mise/config.toml`, then:
+Edit `~/.config/mise/mise.toml`, then:
 
 ```bash
 mise bootstrap
 ```
 
-Preview first if unsure: `mise bootstrap --dry-run`
+Preview first if unsure:
+
+```bash
+mise bootstrap --dry-run
+```
+
+Push your change back so other machines get it:
+
+```bash
+git -C ~/.config/mise commit -am "what changed"
+git -C ~/.config/mise push
+```
 
 ## Undo
 
@@ -44,15 +65,15 @@ mise dot rollback ~/.zshrc
 mise dot undo
 ```
 
-## First machine only (nothing published yet)
+## Layout
 
-```bash
-sudo pacman -S --needed git mise
-install -d ~/.config/mise
-cp mise.toml          ~/.config/mise/config.toml
-cp mise.omarchy4.toml ~/.config/mise/config.omarchy4.toml
-cp -r mise-tasks      ~/.config/mise/tasks
-mise dot track ~/.config/mise/config.toml ~/.config/mise/config.omarchy4.toml ~/.config/mise/tasks
-mise bootstrap
-mise dot origin set https://github.com/<you>/dotfiles --sync sync
-```
+The repository **is** `~/.config/mise`. Clone it there and everything lines up.
+
+| Path | Role |
+| --- | --- |
+| `mise.toml` | the machine: tools, packages, dotfiles, services, tasks |
+| `mise.omarchy4.toml` | Omarchy 4 "quattro" overlay |
+| `tasks/` | file tasks that stay imperative |
+| `config.local.toml` | machine-local, mise writes here — do not commit |
+
+Add `config.local.toml` to `.gitignore` so mise's local writes stay off the repo.
