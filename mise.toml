@@ -19,10 +19,11 @@
 # Settings
 # --------------------------------------------------------------------------
 [settings]
-# Read .nvmrc / .node-version (node) and the `packageManager` field in
-# package.json (pnpm), so each project pins its own runtime. This replaces the
-# old `fnm env --use-on-cd --version-file-strategy=recursive` behaviour.
-idiomatic_version_file_enable_tools = ["node", "pnpm"]
+# Node and pnpm are NOT managed here. Node comes from fnm (~/.zshrc runs
+# `fnm env --use-on-cd --version-file-strategy recursive`) and pnpm from the
+# standalone installer in ~/.local/share/pnpm. mise must not claim the idiomatic
+# version files for them or it would fight fnm over .node-version / .nvmrc.
+idiomatic_version_file_enable_tools = []
 
 # Keep mise quiet about version bumps; check with `mise outdated` deliberately.
 # (Remove if you prefer the reminders.)
@@ -31,8 +32,7 @@ idiomatic_version_file_enable_tools = ["node", "pnpm"]
 # Development tools
 # --------------------------------------------------------------------------
 [tools]
-node = "22"
-"npm:pnpm" = "latest"
+# `node` and `npm:pnpm` intentionally absent — see the note above [settings].
 "npm:typescript" = "latest"
 "npm:typescript-language-server" = "latest"
 "npm:vscode-langservers-extracted" = "latest"

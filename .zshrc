@@ -7,6 +7,11 @@ source ~/.profile
 # mise (toolchain, PATH, shims)
 eval "$(mise activate zsh)"
 
+# fnm (Node.js versions) — must come AFTER mise activate so fnm's node wins in
+# PATH. --use-on-cd + recursive picks up .nvmrc / .node-version from the current
+# directory or any parent, and switches automatically on cd.
+eval "$(fnm env --use-on-cd --version-file-strategy recursive)"
+
 
 # Preferred editor for local and remote sessions
 export EDITOR=nvim
