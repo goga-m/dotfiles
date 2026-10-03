@@ -18,9 +18,9 @@ mise --version
 
 ## Install
 
-### New machine
+Two paths, depending on whether a shared history repository already exists.
 
-The fastest path, if a shared history repository already exists:
+### Additional machine — shared history exists
 
 ```bash
 curl https://mise.run | sh
@@ -28,33 +28,59 @@ mise bootstrap --adopt <private-repo-url>
 ```
 
 `--adopt` restores the tracked files and configuration from the repository,
-holds anything that conflicts with existing files for a decision, and then runs
-the bootstrap. See [Sharing](#sharing).
+holds anything that conflicts with existing files for a decision, then runs the
+bootstrap. See [Sharing](#sharing).
 
-### From this repository
+### First machine — no shared history yet
+
+**1. Install mise** (≥ 2026.7.4)
 
 ```bash
-# 1. mise
-sudo pacman -S --needed mise          # needs >= 2026.7.4
+sudo pacman -S --needed mise
+```
 
-# 2. clone and install the configuration globally
+**2. Clone the repository**
+
+```bash
 git clone <repo> ~/src/dotfiles
-mkdir -p ~/.config/mise
-ln -s ~/src/dotfiles/mise.toml           ~/.config/mise/config.toml
-ln -s ~/src/dotfiles/mise.omarchy4.toml ~/.config/mise/config.omarchy4.toml
+```
 
-# 3. trust and apply
+**3. Point the global mise configuration at the repository**
+
+```bash
+mkdir -p ~/.config/mise
+ln -s ~/src/dotfiles/mise.toml ~/.config/mise/config.toml
+```
+
+This symlink is a **rename**. mise reads its global configuration from
+`~/.config/mise/config.toml`, but the repository keeps the file named
+`mise.toml` because that is the filename mise recognises in a project
+directory. Linking rather than copying means editing the repository edits the
+live configuration, and every `mise` command works from any directory.
+
+**4. Trust and apply**
+
+```bash
 mise trust ~/.config/mise/config.toml
-mise bootstrap --dry-run      # preview
-mise bootstrap              # apply
+mise bootstrap --dry-run    # preview
+mise bootstrap            # apply
 ```
 
 `mise bootstrap` prompts before mutating and uses `sudo` where a package or
 unit requires it.
 
-The configuration is symlinked into `~/.config/mise/` so that mise reads it
-globally — every `mise` command then works from any directory, and editing the
-repository edits the live configuration.
+The Omarchy 4 profile is **not** installed here — it is opt-in. See
+[Machine profiles](#machine-profiles).
+
+### Updating the configuration later
+
+Edit `~/src/dotfiles/mise.toml`, then re-trust, because mise re-prompts when a
+configuration file changes:
+
+```bash
+mise trust ~/.config/mise/config.toml
+mise bootstrap
+```
 
 ## Layout
 
@@ -197,13 +223,27 @@ Omarchy 4 "quattro", which is package-backed and configured in Lua.
 | defaults | `~/.local/share/omarchy/default/hypr/*.conf` | `/usr/share/omarchy/default/hypr/*.lua` |
 | API | `bind = SUPER, J, ...` | `o.bind("SUPER + J", ...)`, `hl.unbind(...)` |
 
-Select the profile per machine:
+Select the profile on a quattro machine — two steps, because the overlay has to
+be installed under the name mise looks for, then activated:
 
 ```bash
+# 1. install the overlay as the profile filename mise expects
+ln -s ~/src/dotfiles/mise.omarchy4.toml ~/.config/mise/config.omarchy4.toml
+
+# 2. activate the profile for this machine
 echo 'env = ["omarchy4"]' > ~/.config/mise/miserc.local.toml
-# or one-off
+
+mise bootstrap
+```
+
+For a single command without installing it permanently:
+
+```bash
 mise -E omarchy4 bootstrap
 ```
+
+On Omarchy 3.x neither step is needed — the base configuration already
+describes that machine.
 
 Profiles also work for work/personal splits, since any part of the
 configuration can be overridden in `mise.<env>.toml`.
