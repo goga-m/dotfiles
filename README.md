@@ -6,19 +6,17 @@ Arch Linux (Hyprland / i3), managed by mise.
 
 ```bash
 sudo pacman -S --needed git mise
-git clone https://github.com/goga-m/dotfiles ~/.config/mise
-mise bootstrap
+mise bootstrap --adopt https://github.com/goga-m/dotfiles
 ```
 
 Log out, log back in. That's the install.
 
 **If `~/.config/mise` already exists** (it does as soon as mise has run once)
-and isn't a git checkout, the clone will refuse. Move it aside first:
+and isn't a git checkout, adopt refuses. Move it aside and run the same command:
 
 ```bash
 mv ~/.config/mise ~/.config/mise.bak
-git clone https://github.com/goga-m/dotfiles ~/.config/mise
-mise bootstrap
+mise bootstrap --adopt https://github.com/goga-m/dotfiles
 ```
 
 **If bootstrap stops on conflicting files** — the machine already has a
