@@ -157,37 +157,35 @@ login_shell = "/usr/bin/zsh"
 # `exclude` is relative to the tracked path. Patterns containing `/` are
 # anchored to that root.
 [dotfiles]
-
-# --- shell ---------------------------------------------------------------
-"~/.zshrc" = { mode = "track" }
 "~/.bashrc" = { mode = "track" }
-"~/.profile" = { mode = "track" }
-"~/.config/zsh" = { mode = "track" }
-
-# --- terminal ------------------------------------------------------------
-"~/.wezterm.lua" = { mode = "track" }
 "~/.config/alacritty" = { mode = "track" }
 
 # --- git -----------------------------------------------------------------
 # `track` takes no `exclude` — mise drops the whole entry if you pass one.
 # Per-machine paths are kept out with `mise dot exclude` (see below).
 "~/.config/git" = { mode = "track" }
-
-# --- prompt --------------------------------------------------------------
-"~/.config/starship.toml" = { mode = "track" }
-
-# --- editors and file managers -------------------------------------------
-"~/.config/nvim" = { mode = "track" }
-"~/.tigrc" = { mode = "track" }
-"~/.config/vifm" = { mode = "track" }
-"~/.config/yazi" = { mode = "track" }
+"~/.config/hypr" = { mode = "track" }
 
 # --- window managers -----------------------------------------------------
 "~/.config/i3" = { mode = "track" }
-"~/.config/hypr" = { mode = "track" }
+
+# --- editors and file managers -------------------------------------------
+"~/.config/nvim" = { mode = "track" }
 
 # --- launcher theme ------------------------------------------------------
 "~/.config/rofi" = { mode = "track" }
+
+# --- prompt --------------------------------------------------------------
+"~/.config/starship.toml" = { mode = "track" }
+"~/.config/vifm" = { mode = "track" }
+"~/.config/yazi" = { mode = "track" }
+"~/.config/zsh" = { mode = "track" }
+"~/.profile" = { mode = "track" }
+"~/.tigrc" = { mode = "track" }
+
+# --- terminal ------------------------------------------------------------
+"~/.wezterm.lua" = { mode = "track" }
+"~/.zshrc" = { mode = "track" }
 
 # Per-machine / editor-state paths kept out of history. `mise dot exclude` is
 # the global exclusion list — `track` entries cannot carry their own.
