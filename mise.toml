@@ -10,9 +10,11 @@
 #   ~/.config/mise/config.omarchy4.toml  profile overlay for Omarchy 4 "quattro"
 #   ~/.config/mise/tasks/                file tasks that stay imperative
 #
-# Dotfiles use `mode = "track"`: live files stay exactly where they are, mise
-# records checkpoints of them, and a watcher service saves edits automatically.
-# There is no source tree to keep in sync — see README.md.
+# Dotfiles use whole-file `copy` entries, exactly as in the mise docs
+# ("Start with one managed file"): each `source` is relative to this config
+# file's directory, so source = ".zshrc" means ~/.config/mise/.zshrc.
+# `mise dot apply` copies repo -> live; `mise dot add --changed` captures
+# live edits back into the repo. History is git.
 #
 # --------------------------------------------------------------------------
 # Settings
@@ -84,9 +86,9 @@ login_shell = "/usr/bin/zsh"
 "pacman:ncdu" = "latest"
 "pacman:gum" = "latest"
 "pacman:aichat" = "latest"
-"pacman:ueberzugpp" = "latest"        # image preview for yazi / vifm
-"pacman:nwg-displays" = "latest"     # Wayland display management
-"pacman:wl-clipboard" = "latest"     # wl-copy / wl-paste
+"pacman:ueberzugpp" = "latest"   # image preview for yazi / vifm
+"pacman:nwg-displays" = "latest" # Wayland display management
+"pacman:wl-clipboard" = "latest" # wl-copy / wl-paste
 
 # --- prompt --------------------------------------------------------------
 "pacman:starship" = "latest"
@@ -145,68 +147,44 @@ login_shell = "/usr/bin/zsh"
 # ===========================================================================
 # Dotfiles
 # ===========================================================================
-# `mode = "track"` leaves each file where it is and records checkpoints of it.
-# With the watcher service below, edits from any editor or agent are saved
-# automatically; without it, run `mise dot save`.
-#
-# Track narrowly. Directories accumulate caches, session state, and logs that
-# should not end up in history — check the size before enrolling one:
-#
-#   mise dot track --dry-run ~/.config/somedir
-#
-# `exclude` is relative to the tracked path. Patterns containing `/` are
-# anchored to that root.
+# Whole-file `copy` entries: `source` is relative to this config file's
+# directory (~/.config/mise). Apply copies repo -> live and overwrites the
+# targets without --force. Directory copies are additive: machine-local
+# files the repo doesn't have (~/.config/git/config.local, vifminfo.json,
+# ...) are left alone. `exclude` filters the source tree.
 [dotfiles]
-"~/.bashrc" = { mode = "track" }
-"~/.config/alacritty" = { mode = "track" }
 
-# --- git -----------------------------------------------------------------
-# `track` takes no `exclude` — mise drops the whole entry if you pass one.
-# Per-machine paths are kept out with `mise dot exclude` (see below).
-"~/.config/git" = { mode = "track" }
-"~/.config/hypr" = { mode = "track" }
-
-# --- window managers -----------------------------------------------------
-"~/.config/i3" = { mode = "track" }
-
-# --- editors and file managers -------------------------------------------
-"~/.config/nvim" = { mode = "track" }
-
-# --- launcher theme ------------------------------------------------------
-"~/.config/rofi" = { mode = "track" }
-
-# --- prompt --------------------------------------------------------------
-"~/.config/starship.toml" = { mode = "track" }
-"~/.config/vifm" = { mode = "track" }
-"~/.config/yazi" = { mode = "track" }
-"~/.config/zsh" = { mode = "track" }
-"~/.profile" = { mode = "track" }
-"~/.tigrc" = { mode = "track" }
+# --- shell ---------------------------------------------------------------
+"~/.zshrc" = { source = ".zshrc", mode = "copy" }
+"~/.bashrc" = { source = ".bashrc", mode = "copy" }
+"~/.profile" = { source = ".profile", mode = "copy" }
+"~/.config/zsh" = { source = ".config/zsh", mode = "copy" }
 
 # --- terminal ------------------------------------------------------------
-"~/.wezterm.lua" = { mode = "track" }
-"~/.zshrc" = { mode = "track" }
+"~/.wezterm.lua" = { source = ".wezterm.lua", mode = "copy" }
+"~/.config/alacritty" = { source = ".config/alacritty", mode = "copy" }
 
-# Per-machine / editor-state paths kept out of history. `mise dot exclude` is
-# the global exclusion list — `track` entries cannot carry their own.
-[history]
-exclude = [
-  "~/.config/git/config.local",
-  "~/.config/git/config.local.bak-*",
-  "~/.config/vifm/vifminfo.json",
-  "~/.config/yazi/keymap.toml-*",
-  "~/.config/hypr/monitors.conf",
-  "~/.config/hypr/monitors.lua",
-]
+# --- git -----------------------------------------------------------------
+"~/.config/git" = { source = ".config/git", mode = "copy" }
 
-# ===========================================================================
-# History watcher
-# ===========================================================================
-# Saves checkpoints of tracked files as they change. Installed as a systemd
-# user service (dev.mise.mise-history.service) on Linux, a LaunchAgent on
-# macOS, or a Scheduled Task on Windows.
-[bootstrap.services.mise-history]
-builtin = "history-watch"
+# --- prompt --------------------------------------------------------------
+"~/.config/starship.toml" = { source = ".config/starship.toml", mode = "copy" }
+
+# --- editors and file managers -------------------------------------------
+"~/.config/nvim" = { source = ".config/nvim", mode = "copy" }
+"~/.tigrc" = { source = ".tigrc", mode = "copy" }
+"~/.config/vifm" = { source = ".config/vifm", mode = "copy" }
+"~/.config/yazi" = { source = ".config/yazi", mode = "copy" }
+
+# --- window managers -----------------------------------------------------
+# The base machine runs the Omarchy 3 (hyprlang) set. Hyprland 0.55+
+# prefers hyprland.lua whenever both exist, so exactly one set is copied
+# per machine; the omarchy4 overlay replaces this entry with the Lua set.
+"~/.config/hypr" = { source = ".config/hypr", mode = "copy", exclude = ["*.lua"] }
+"~/.config/i3" = { source = ".config/i3", mode = "copy" }
+
+# --- launcher theme ------------------------------------------------------
+"~/.config/rofi" = { source = ".config/rofi", mode = "copy" }
 
 # ===========================================================================
 # systemd user units

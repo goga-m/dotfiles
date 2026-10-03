@@ -57,10 +57,12 @@ git -C ~/.config/mise push
 
 ## Undo
 
+History is plain git — the live files link straight into this repo:
+
 ```bash
-mise dot history --path ~/.zshrc
-mise dot rollback ~/.zshrc
-mise dot undo
+git -C ~/.config/mise log --oneline -- .zshrc
+git -C ~/.config/mise checkout <commit> -- .zshrc
+mise dot apply
 ```
 
 ## Layout

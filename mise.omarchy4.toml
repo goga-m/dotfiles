@@ -18,12 +18,12 @@
 # ~/.config/mise/config.omarchy4.toml for the profile to be found.
 #
 # Entries merge by target path, so this replaces the base entry for
-# ~/.config/hypr entirely — the base exclusions are repeated here.
+# ~/.config/hypr entirely — the Lua set only, no machine-specific monitors.
 # --------------------------------------------------------------------------
 
 [dotfiles]
-"~/.config/hypr" = { mode = "track", exclude = [
-  "monitors.conf",
-  "monitors.lua",
+"~/.config/hypr" = { source = ".config/hypr", mode = "copy", exclude = [
   "*.conf",          # Omarchy 3 set: not used on quattro
+  "monitors.conf",
+  "monitors.lua",    # machine-specific, generated per display setup
 ] }

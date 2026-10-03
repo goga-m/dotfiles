@@ -138,3 +138,6 @@ export PATH='/home/pico/.hunk/bin':"$PATH"
 
 # Rust/Cargo binaries
 export PATH="$HOME/.cargo/bin:$PATH"
+
+# restic backups
+export RESTIC_REPOSITORY="/$HOME/backup/restic"
