@@ -125,6 +125,10 @@ login_shell = "/usr/bin/zsh"
 # mise clones what is missing and only updates a checkout when the worktree is
 # clean and the origin URL matches. `mise bootstrap repos update` fast-forwards.
 [bootstrap.repos]
+# oh-my-zsh itself is declared here so the whole tree is owned by `repos`.
+# Do NOT run the upstream installer — it refuses a non-empty $ZSH, and the
+# plugin checkouts below create that directory before any task can run.
+"~/.oh-my-zsh" = { url = "https://github.com/ohmyzsh/ohmyzsh" }
 "~/.oh-my-zsh/custom/plugins/fzf-tab" = { url = "https://github.com/Aloxaf/fzf-tab" }
 "~/.oh-my-zsh/custom/plugins/zsh-autosuggestions" = { url = "https://github.com/zsh-users/zsh-autosuggestions" }
 "~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" = { url = "https://github.com/zsh-users/zsh-syntax-highlighting.git" }
@@ -160,8 +164,9 @@ login_shell = "/usr/bin/zsh"
 "~/.config/alacritty" = { mode = "track" }
 
 # --- git -----------------------------------------------------------------
-# config.local holds per-machine identity and backups; keep it out of history.
-"~/.config/git" = { mode = "track", exclude = ["config.local", "config.local.bak-*"] }
+# `track` takes no `exclude` — mise drops the whole entry if you pass one.
+# Per-machine paths are kept out with `mise dot exclude` (see below).
+"~/.config/git" = { mode = "track" }
 
 # --- prompt --------------------------------------------------------------
 "~/.config/starship.toml" = { mode = "track" }
@@ -169,18 +174,27 @@ login_shell = "/usr/bin/zsh"
 # --- editors and file managers -------------------------------------------
 "~/.config/nvim" = { mode = "track" }
 "~/.tigrc" = { mode = "track" }
-# vifminfo.json is editor state (open tabs, history), not configuration.
-"~/.config/vifm" = { mode = "track", exclude = ["vifminfo.json"] }
-# Timestamped keymap backups accumulate on every keymap write.
-"~/.config/yazi" = { mode = "track", exclude = ["keymap.toml-*"] }
+"~/.config/vifm" = { mode = "track" }
+"~/.config/yazi" = { mode = "track" }
 
 # --- window managers -----------------------------------------------------
 "~/.config/i3" = { mode = "track" }
-# monitors.conf is per-machine hardware layout.
-"~/.config/hypr" = { mode = "track", exclude = ["monitors.conf", "monitors.lua"] }
+"~/.config/hypr" = { mode = "track" }
 
 # --- launcher theme ------------------------------------------------------
 "~/.config/rofi" = { mode = "track" }
+
+# Per-machine / editor-state paths kept out of history. `mise dot exclude` is
+# the global exclusion list — `track` entries cannot carry their own.
+[history]
+exclude = [
+  "~/.config/git/config.local",
+  "~/.config/git/config.local.bak-*",
+  "~/.config/vifm/vifminfo.json",
+  "~/.config/yazi/keymap.toml-*",
+  "~/.config/hypr/monitors.conf",
+  "~/.config/hypr/monitors.lua",
+]
 
 # ===========================================================================
 # History watcher
@@ -233,8 +247,11 @@ wanted_by = ["graphical-session.target"]
 # may run it again on later bootstraps, so everything it calls must be safe to
 # repeat.
 [tasks.bootstrap]
-description = "final bootstrap step: shell setup + session manager"
+description = "final bootstrap step: session manager"
 # outputs = { auto = true } keys freshness on a hash of this task definition,
 # so the task re-runs when it is edited and is skipped otherwise.
 outputs = { auto = true }
-run = ["mise run zsh-setup", "mise run omarchy-session"]
+run = "mise run omarchy-session"
+# zsh-setup is gone: oh-my-zsh is now a [bootstrap.repos] entry, so the repos
+# phase installs and updates it. The upstream installer cannot run against a
+# non-empty $ZSH and always failed here.
