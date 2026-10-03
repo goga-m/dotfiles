@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 #MISE description="Install/update omarchy-session via its upstream installer"
 #
-# Port of run_once_06_omarchy_session.sh.
 # The checkout itself is a [bootstrap.repos] entry
 # (~/.local/share/omarchy-session/src); this task only runs the installer.
 #
-# Upstream's installer is deliberately conservative: it only refreshes the
+# The upstream installer is deliberately conservative: it only refreshes the
 # `ws` / `restore-workspace` shortcuts when they are missing or already managed
-# by omarchy-session, so an unrelated `ws` on some other host is left alone
+# by omarchy-session, so an unrelated `ws` on another host is left alone
 # (no --force).
 
 set -uo pipefail

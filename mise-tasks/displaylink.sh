@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 #MISE description="Install DisplayLink dock support (self-skips with no DisplayLink hardware)"
 #
-# Port of run_once_05_displaylink.sh.
-#
 # Deliberately NOT wired into [tasks.bootstrap]: it needs sudo and only applies
-# to machines with a DisplayLink dock on USB. Run it by hand when you plug one
-# in:
+# to machines with a DisplayLink dock on USB. Run it by hand when one is
+# plugged in:
 #
 #   mise run displaylink
 #

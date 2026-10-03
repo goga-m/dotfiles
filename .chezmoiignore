@@ -1,11 +1,6 @@
-# This branch is managed by mise, NOT chezmoi.
+# This repository is not a chezmoi source tree.
 #
-# Without this file `chezmoi apply` on this branch would deploy the mise source
-# tree straight into $HOME:
-#
-#   ~/mise.toml  ~/mise.omarchy4.toml  ~/dotfiles/  ~/mise-tasks/
-#   ~/MISE.md    ~/README.md           ~/docs/
-#
-# Ignoring everything makes `chezmoi apply` a no-op here. The real chezmoi
-# setup lives on `master`.
+# Ignoring everything keeps an accidental `chezmoi apply` from deploying the
+# repository contents into $HOME while this checkout happens to live in
+# chezmoi's source directory.
 *

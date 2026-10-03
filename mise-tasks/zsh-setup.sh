@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #MISE description="Install or update oh-my-zsh itself (plugins come from [bootstrap.repos])"
 #
-# Port of the first half of run_once_01_setup_zsh.sh.
-# The chsh call is now [bootstrap.user].login_shell and the four plugin clones
-# are [bootstrap.repos] entries, so all that is left here is OMZ proper.
+# The login shell is declared via [bootstrap.user].login_shell and the custom
+# plugins via [bootstrap.repos]; this task covers oh-my-zsh itself.
 #
-# Safe to re-run: the official installer pulls if OMZ is already installed.
+# Safe to re-run: the official installer pulls if oh-my-zsh is already
+# installed.
 
 set -uo pipefail
 

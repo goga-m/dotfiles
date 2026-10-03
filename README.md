@@ -1,181 +1,256 @@
 # dotfiles
 
-Personal dotfiles. This branch is a **proof of concept: everything managed with
-[mise](https://mise.jdx.dev/) instead of [chezmoi](https://www.chezmoi.io/)**.
+Development environment and dotfiles managed entirely with
+[mise](https://mise.jdx.dev/) — toolchain, host packages, shell configuration,
+desktop configuration, systemd user services, and setup tasks in one
+declarative configuration.
 
-Target: **Arch Linux** (Wayland / Hyprland, plus i3). Requires mise **≥ 2026.7.4**
-(the release where `mise bootstrap` and `[dotfiles]` went stable). Developed and
-validated against **2026.9.9** from Arch `extra`.
+Target: **Arch Linux** (Wayland / Hyprland, plus i3).
 
-> **New here?** Read [MISE.md](./MISE.md) — the daily-use guide mapping
-> `chezmoi add` / `chezmoi apply` muscle memory onto mise.
+## Requirements
+
+mise **≥ 2026.7.4**, the release in which `mise bootstrap` and `[dotfiles]`
+became stable. Verified against **2026.9.9**.
+
+```bash
+mise --version
+```
 
 ## Install
 
-```bash
-# 1. mise (Arch)
-sudo pacman -S --needed mise        # needs >= 2026.7.4; extra has 2026.9.9
+### New machine
 
-# 2. clone, point ~/.dotfiles at it, trust, bootstrap
-git clone <repo> ~/.local/share/chezmoi
-ln -s ~/.local/share/chezmoi ~/.dotfiles     # mise's default dotfiles.root
-cd ~/.local/share/chezmoi
-mise trust .
-mise bootstrap
-```
-
-`mise bootstrap` prompts before mutating and uses `sudo` where a package or unit
-needs it — keep a terminal handy.
-
-Preview first if you prefer:
+The fastest path, if a shared history repository already exists:
 
 ```bash
-mise bootstrap --dry-run
+curl https://mise.run | sh
+mise bootstrap --adopt <private-repo-url>
 ```
 
-## Day-to-day
+`--adopt` restores the tracked files and configuration from the repository,
+holds anything that conflicts with existing files for a decision, and then runs
+the bootstrap. See [Sharing](#sharing).
+
+### From this repository
 
 ```bash
-mise dot diff                    # what would change
-mise dot apply                   # apply just the files
-mise dot add --changed           # capture live edits back (chezmoi re-add)
-mise bootstrap                   # apply everything
-mise bootstrap status            # whole-machine status
-git pull && mise bootstrap       # chezmoi update
+# 1. mise
+sudo pacman -S --needed mise          # needs >= 2026.7.4
+
+# 2. clone and install the configuration globally
+git clone <repo> ~/src/dotfiles
+mkdir -p ~/.config/mise
+ln -s ~/src/dotfiles/mise.toml           ~/.config/mise/config.toml
+ln -s ~/src/dotfiles/mise.omarchy4.toml ~/.config/mise/config.omarchy4.toml
+
+# 3. trust and apply
+mise trust ~/.config/mise/config.toml
+mise bootstrap --dry-run      # preview
+mise bootstrap              # apply
 ```
 
-Full list in [MISE.md](./MISE.md).
+`mise bootstrap` prompts before mutating and uses `sudo` where a package or
+unit requires it.
+
+The configuration is symlinked into `~/.config/mise/` so that mise reads it
+globally — every `mise` command then works from any directory, and editing the
+repository edits the live configuration.
 
 ## Layout
 
-mise-native: **the repo root is the dotfiles root**, and `~/.dotfiles` is a
-symlink to this repo so `dotfiles.root` resolves here.
-
-| Path | What it is |
+| Path | Purpose |
 | --- | --- |
-| `mise.toml` | the whole machine: tools, packages, env, dotfiles, systemd units, tasks |
-| `mise.omarchy4.toml` | overlay for Omarchy 4 "quattro" (Lua hypr configs) |
-| `mise-tasks/` | file-tasks for the parts that stay imperative |
-| `.zshrc` `.bashrc` `.profile` `.tigrc` `.wezterm.lua` | top-level sources, mirroring `$HOME` |
-| `.config/` | everything under `~/.config`, same tree shape |
-| `MISE.md` | daily-use guide |
-| `docs/mise-research.md` | the chezmoi→mise capability research this branch came out of |
+| `mise.toml` | the machine: tools, packages, environment, dotfiles, systemd units, tasks |
+| `mise.omarchy4.toml` | profile overlay for Omarchy 4 "quattro" |
+| `mise-tasks/` | file tasks for steps that stay imperative |
+| `MISE.md` | command reference for day-to-day use |
+| `.zshrc`, `.bashrc`, `.profile`, `.tigrc`, `.wezterm.lua`, `.config/` | a snapshot of the dotfiles, mirroring `$HOME` |
 
-This replaces chezmoi's `dot_` / `dot_config_` filename encoding — mise mirrors
-real `$HOME` paths, and every entry is declared in `[dotfiles]`. That
-allow-list is the replacement for `.chezmoiignore`: repo-only files simply never
-get an entry.
+The snapshot mirrors the home directory tree for convenience: it is a browsable
+reference and a way to seed a new machine. It is **not** what mise deploys.
+Under `mode = "track"` the live files in `$HOME` are the source of truth and
+mise history is authoritative — see the next section. If the two drift, the
+live files win.
 
-Because `dotfiles.root` reaches the repo through the `~/.dotfiles` symlink,
-`mise dot add` seeds new sources into version control without needing `-s`.
+## How configuration is applied
 
-## What replaced what
+`mise bootstrap` converges the machine in ordered phases:
 
-| was | now |
-| --- | --- |
-| `run_once_00_install_packages_arch.sh` (~200 lines: 28 pkgs + conflict resolver) | `[bootstrap.packages]` (`pacman:` + `aur:`) |
-| `fnm install 22` + `npm i -g pnpm typescript …` | `[tools] node` + `npm:` tools |
-| `chsh -s /usr/bin/zsh` | `[bootstrap.user].login_shell` |
-| `run_once_01` plugin clones | `[bootstrap.repos]` |
-| `run_once_02` rofi theme clone + copy | vendored at `dotfiles/.config/rofi/config.rasi` |
-| `run_once_03` pipewire packages | `[bootstrap.packages]` |
-| `run_once_03` `usermod -aG audio` | `[bootstrap.users]` (commented out — see below) |
-| `run_once_05_displaylink.sh` | `mise run displaylink` |
-| `run_once_06_omarchy_session.sh` | `[bootstrap.repos]` + `mise run omarchy-session` |
-| `dot_config/systemd/user/*.service` + both `run_onchange_after_apply-systemd-*` | `[bootstrap.linux.systemd.units.*]` |
-| `.chezmoiignore` | the `[dotfiles]` allow-list |
-| `run_onchange_*` freshness | `outputs = { auto = true }` (keyed on a hash of the task definition) |
+```
+accounts → plugins → packages → files → services → firewall → compose
+         → repos → dotfiles → shell activation → platform defaults
+         → linux user units → user settings → tools → bootstrap task → final hook
+```
 
-## Omarchy 3.x vs Omarchy 4 "quattro"
-
-The desktop host runs Omarchy 3.8 (hyprlang, `~/.local/share/omarchy`), while
-the VM runs Omarchy 4.0.4 "quattro" — package-backed (`omarchy-settings` →
-`/usr/share/omarchy`) and configured in **Lua**.
-
-Hyprland 0.55+ prefers `hyprland.lua` over `hyprland.conf` whenever both exist,
-so only one set may be deployed per machine.
-
-| | Omarchy 3.x (host) | Omarchy 4 quattro (VM) |
-| --- | --- | --- |
-| entry | `hypr/hyprland.conf` | `hypr/hyprland.lua` |
-| overrides | `bindings.conf`, `tiling.conf`, `input.conf`, `autostart.conf`, `workspaces.conf` | `bindings.lua`, `input.lua`, `autostart.lua` |
-| defaults | `~/.local/share/omarchy/default/hypr/*.conf` | `/usr/share/omarchy/default/hypr/*.lua` |
-| API | `bind = SUPER, J, ...` | `o.bind("SUPER + J", ...)`, `hl.unbind(...)`, `hl.config{}` |
-| **selected by** | `mise.toml` (the default) | `mise.omarchy4.toml` via the `omarchy4` profile |
-
-chezmoi picked with `{{ if stat "/usr/share/omarchy/default/hypr/omarchy.lua" }}`.
-mise's `[dotfiles]` `source` values are **not templated** and `variants` select
-on os/arch/profile only — both machines are `linux-x64`, so it becomes one line
-of per-machine setup instead:
+Each phase is independently inspectable:
 
 ```bash
-# on a quattro machine, once
+mise bootstrap status                    # everything
+mise bootstrap packages status           # one phase
+mise bootstrap plan                      # the full declarative plan
+mise bootstrap --only dotfiles,tools     # a subset
+mise bootstrap --skip firewall          # everything except a subset
+```
+
+## How dotfiles work
+
+Dotfiles use `mode = "track"`. Each file stays exactly where it is — nothing is
+symlinked or copied — and mise records checkpoints of it into a local Git
+repository. The `history-watch` service saves edits automatically, so a
+configuration change made from any editor or agent is captured without a
+follow-up command.
+
+```bash
+mise dot history --path ~/.zshrc        # checkpoints for a file
+mise dot rollback ~/.zshrc --dry-run    # preview restoring the previous version
+mise dot rollback ~/.zshrc              # restore it
+mise dot undo                           # reverse the rollback
+```
+
+Because the live file is the real file, applications can write to it freely and
+there is no source tree that silently drifts out of date.
+
+### Tracking a new file
+
+```bash
+mise dot track ~/.config/foo/bar.toml
+```
+
+This adds the entry to the configuration and saves a baseline checkpoint.
+
+### Tracking a directory
+
+Check the size first. Home directories accumulate caches, session state, and
+logs that should not enter history:
+
+```bash
+mise dot track --dry-run ~/.config/somedir
+# ~/.config/somedir: 22,972 files, 1.2 GiB
+```
+
+Prefer tracking individual files, or add `exclude` patterns for the parts that
+are state rather than configuration:
+
+```toml
+[dotfiles]
+"~/.config/vifm" = { mode = "track", exclude = ["vifminfo.json"] }
+```
+
+### Stopping tracking
+
+```bash
+mise dot untrack ~/.config/foo/bar.toml    # stops capture; the file stays
+```
+
+### Seeding a new machine from the snapshot
+
+Without a shared history repository, copy the snapshot into place before
+starting to track:
+
+```bash
+cd ~/src/dotfiles
+cp .zshrc .bashrc .profile .tigrc .wezterm.lua ~/
+cp -a .config/. ~/.config/
+mise bootstrap
+```
+
+Prefer `mise bootstrap --adopt <repo>` when a shared history repository exists
+— it restores the tracked versions and handles conflicts properly.
+
+## Sharing
+
+History is local until a remote is connected:
+
+```bash
+mise dot origin set <private-repo-url>
+```
+
+With `history.sync = "sync"` the watcher publishes saved changes and
+periodically fetches and applies changes made on other machines. Use
+`--sync manual` when connecting to keep checkpoints local until `mise dot sync`
+is run explicitly.
+
+**Use a private repository.** Synchronisation sends earlier checkpoints as
+well, so temporary edits can end up in shared history. Configure
+[encryption](https://mise.jdx.dev/history.html#encrypted-shared-files) before
+the first save of anything sensitive.
+
+Conflicts pause publication rather than inserting conflict markers into live
+files:
+
+```bash
+mise dot status
+mise dot pull --take-remote ~/.zshrc    # or --keep-local
+```
+
+Sync resumes once every conflict is resolved.
+
+## Machine profiles
+
+One configuration can describe several machines. This repository targets
+Omarchy 3.x by default; `mise.omarchy4.toml` overrides the Hyprland layer for
+Omarchy 4 "quattro", which is package-backed and configured in Lua.
+
+| | Omarchy 3.x | Omarchy 4 quattro |
+| --- | --- | --- |
+| entry | `hypr/hyprland.conf` | `hypr/hyprland.lua` |
+| defaults | `~/.local/share/omarchy/default/hypr/*.conf` | `/usr/share/omarchy/default/hypr/*.lua` |
+| API | `bind = SUPER, J, ...` | `o.bind("SUPER + J", ...)`, `hl.unbind(...)` |
+
+Select the profile per machine:
+
+```bash
 echo 'env = ["omarchy4"]' > ~/.config/mise/miserc.local.toml
 # or one-off
 mise -E omarchy4 bootstrap
 ```
 
-The `.conf` files stay on disk under quattro (mise 2026.9.9 has no
-`mode = "absent"`), but Hyprland ignores them when `hyprland.lua` is present —
-same practical outcome as chezmoi's ignore.
+Profiles also work for work/personal splits, since any part of the
+configuration can be overridden in `mise.<env>.toml`.
 
-Edit whichever pair matches the machine you are changing; they are kept
-behaviourally in sync, not mechanically generated from each other.
+## Tasks
+
+```bash
+mise tasks ls
+mise run <task>
+mise run --force <task>
+```
+
+| Task | Purpose |
+| --- | --- |
+| `zsh-setup` | install or update oh-my-zsh |
+| `omarchy-session` | run the omarchy-session upstream installer |
+| `displaylink` | DisplayLink dock setup; self-skips when no hardware is present |
+| `bootstrap` | runs `zsh-setup` and `omarchy-session`; executed automatically at the end of `mise bootstrap` |
+
+Tasks with `sources` and `outputs = { auto = true }` are skipped when nothing
+has changed and re-run when the task definition is edited.
 
 ## Notes
 
-- **`~/.dotfiles` must be a symlink to this repo** (see Install). Without it
-  `dotfiles.root` points at a directory that doesn't exist and `mise dot add`
-  has nowhere to seed new sources.
-- **`chezmoi apply` on this branch is a deliberate no-op.** `.chezmoiignore`
-  contains `*` so a stray `chezmoi apply` cannot dump the mise source tree into
-  `$HOME`. The real chezmoi setup is on `master`.
-- **You still have to `cd` into this repo** for mise to see the config — it is
-  project-local, not global. Going global needs two more symlinks
-  (`~/.config/mise/config.toml` → `mise.toml`, `config.omarchy4.toml` →
-  `mise.omarchy4.toml`) plus dropping the explicit `source =` keys so entries
-  resolve through `dotfiles.root` instead of the config file's directory.
-- **Machine-specific files are intentionally undeclared**: `hypr/monitors.conf`,
-  `hypr/monitors.lua`, `vifm/vifminfo.json`, `aichat/config.yaml`,
-  `opencode/opencode.json`. Create them by hand per machine — mise never touches
-  what has no `[dotfiles]` entry.
-- **`audio` group is commented out.** The old script did `usermod -aG audio`.
-  mise manages membership from the user side (`[bootstrap.users.pico] groups =
-  ["audio"]`), but `pico` is already in `audio` on this host, so enabling it
-  would make your login account declaratively managed for no gain. Uncomment only
-  after `mise bootstrap accounts apply --dry-run` reads clean. **Never** set
-  `exclusive_groups = true` — it strips every membership not listed.
+- **Version pins and rolling releases.** Arch ships only the newest build of
+  each package, so pinned `pacman:` / `aur:` entries are skipped with a
+  warning. Use `"latest"` and upgrade with `sudo pacman -Syu`;
+  `mise bootstrap packages upgrade` performs a partial upgrade, which Arch does
+  not support.
+- **Machine-specific files are deliberately excluded** from tracking:
+  `hypr/monitors.conf`, `git/config.local`, `vifm/vifminfo.json`,
+  `yazi/keymap.toml-*`. Create them per machine.
+- **Track narrowly.** A tracked directory captures everything under it. Use
+  `mise dot track --dry-run <dir>` before enrolling one.
 - **`mise bootstrap --yes` skips mise's prompts but does not supply sudo
   credentials.**
-- **Arch + version pins don't mix.** Arch ships only the latest of each package,
-  so pinned `pacman:`/`aur:` entries are skipped with a warning. Use `"latest"`.
-- **Don't rely on `mise bootstrap packages upgrade` on Arch** — it is a partial
-  upgrade, which Arch does not support. Run `sudo pacman -Syu`.
-- **Directory copies are additive.** Delete a source file and the deployed copy
-  stays behind. `mise dot status` won't flag it.
+- **systemd unit keys.** `part_of`, `binds_to`, `before`, `conflicts`,
+  `exec_start_pre`, `exec_start_post`, and `exec_stop_post` are documented but
+  not implemented in every release, and `LogLevelMax` is unavailable. Check
+  `mise bootstrap linux systemd-units apply --dry-run` before relying on one.
+- **This surface moves quickly.** `mise bootstrap` and `[dotfiles]` became
+  stable in 2026.7.4 and the CLI has continued to consolidate. Pin a mise
+  version if the setup matters to you.
 
-## Validation performed
+## Further reading
 
-Against mise 2026.9.9 in an isolated `$HOME`:
-
-- config parses with **0 unknown-field warnings**
-- `mise bootstrap plan` resolves all 27 packages
-- `mise bootstrap --dry-run` verified **non-mutating** (nothing created, including by the bootstrap task)
-- `mise bootstrap --only dotfiles` deployed **92 files**; exec bits preserved; `dot_gitignore` → `.gitignore` correct
-- drift detection produces proper unified diffs; `add --changed` capture direction verified
-- tools resolve: `node@22.23.3`, `pnpm@12.8.1`, `pandoc@3.12`, LSP packages
-- `omarchy4` profile verified to layer the `.lua` set
-- systemd units generate the correct `daemon-reload` / `enable` / `restart` sequence
-
-Known gaps found during validation are listed in [MISE.md §11](./MISE.md).
-
-## Rolling back
-
-This is a branch. `master` still has the working chezmoi setup:
-
-```bash
-git checkout master
-```
-
-chezmoi leaves ordinary files behind, so nothing needs unwinding beyond switching
-back and running `chezmoi apply`.
+- [MISE.md](./MISE.md) — day-to-day command reference
+- [mise dotfiles](https://mise.jdx.dev/dotfiles.html)
+- [mise bootstrap](https://mise.jdx.dev/bootstrap.html)
+- [Setting up a machine](https://mise.jdx.dev/bootstrap/setup.html)

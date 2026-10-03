@@ -1,307 +1,321 @@
-# mise daily-use guide
+# mise command reference
 
-You know `chezmoi add` and `chezmoi apply`. Here is the same muscle memory for mise.
-
-Everything is run **from this directory** (`~/.local/share/chezmoi`), because the
-config lives here and mise discovers it by walking up from the current directory.
-
-```bash
-cd ~/.local/share/chezmoi
-```
+Day-to-day commands for this configuration. All commands work from any
+directory, because the configuration is installed globally at
+`~/.config/mise/config.toml`.
 
 ---
 
-## 0. One-time setup
+## Setup
 
 ```bash
-# trust this directory's config (mise refuses to run untrusted configs)
-mise trust .
-
-# apply everything
-mise bootstrap
+mise trust ~/.config/mise/config.toml    # after every edit to the config
+mise bootstrap                          # apply everything
+mise bootstrap --dry-run                # preview everything
+mise bootstrap status                   # what differs from the configuration
 ```
 
-Re-run `mise trust .` any time you edit `mise.toml` — mise re-prompts when the
-file changes.
+`mise trust` is required whenever the configuration file changes; mise refuses to
+run an untrusted configuration.
 
 ---
 
-## 1. The two commands you already know
+## Dotfiles
 
-| chezmoi | mise |
+### Applying and previewing
+
+```bash
+mise dot apply                # apply tracked/managed dotfiles
+mise dot diff                 # show pending changes
+mise dot status               # state of every entry
+```
+
+`mise dot` is shorthand for `mise bootstrap dotfiles`.
+
+### Tracking a file
+
+```bash
+mise dot track ~/.config/foo/bar.toml
+```
+
+Adds a `[dotfiles]` entry and saves a baseline checkpoint. The file stays where
+it is.
+
+| flag | effect |
 | --- | --- |
-| `chezmoi apply` | `mise bootstrap` |
-| `chezmoi diff` | `mise bootstrap dotfiles diff` |
+| `--dry-run` | show how many files and bytes a path expands to; write nothing |
+| `--no-autosave` | capture only on explicit `mise dot save` |
+| `--encrypt` | encrypt before saving to history (requires `[history.encryption]`) |
+| `--os <os>` | declare a platform variant |
+| `--profile <name>` | declare a mise-environment variant |
 
-`mise bootstrap` runs **everything**: packages → repos → dotfiles → systemd →
-login shell → tools → the `bootstrap` task. If you only touched config files you
-want the dotfiles slice instead (much faster):
-
-```bash
-mise bootstrap dotfiles apply        # just the files
-mise bootstrap dotfiles diff        # what would change
-```
-
-Shorthand: `mise dot` is an alias of `mise bootstrap dotfiles`.
+Check the size of a directory before enrolling it:
 
 ```bash
-mise dot apply
-mise dot diff
-mise dot status
+mise dot track --dry-run ~/.config/somedir
+# ~/.config/somedir: 22,972 files, 1.2 GiB
 ```
+
+### Saving
+
+With the `history-watch` service installed, edits are saved automatically. To
+save on demand:
+
+```bash
+mise dot save                       # all tracked files
+mise dot save ~/.zshrc              # one file
+mise dot watch --once               # single watcher pass
+```
+
+### History and rollback
+
+```bash
+mise dot history                              # all checkpoints
+mise dot history --path ~/.zshrc              # one file
+mise dot history --label "omarchy update"     # by label
+mise dot history diff --operation --patch     # what changed in an operation
+
+mise dot rollback ~/.zshrc --dry-run          # preview
+mise dot rollback ~/.zshrc                    # restore latest differing version
+mise dot rollback ~/.zshrc --to <ref>         # restore a specific checkpoint
+mise dot undo                                 # reverse the last rollback
+```
+
+A rollback is itself recorded as a new checkpoint, so a corrected
+configuration still propagates.
+
+### Capturing an operation between checkpoints
+
+Wrap a command that may change many files — a distribution upgrade, a config
+migration — so both sides are recorded:
+
+```bash
+mise dot capture --label "system update" -- sudo pacman -Syu
+mise dot history --label "system update"
+mise dot history diff --operation --patch
+```
+
+Package and operating-system recovery is separate; use the distro's own
+snapshots for that.
+
+### Excluding paths
+
+```bash
+mise dot exclude '~/.config/foo/cache/**'      # never capture
+mise dot include '~/.config/foo/cache/keep'    # capture again
+```
+
+Patterns without `/` match any single path component; patterns containing `/`
+are anchored to the tracked root.
+
+### Stopping or removing
+
+```bash
+mise dot untrack ~/.config/foo/bar.toml    # stop capture; keep the file
+mise dot unapply ~/.config/foo/bar.toml    # remove something mise deployed
+```
+
+Removing an entry from the configuration does not remove the file.
+
+### Conflicts
+
+```bash
+mise dot conflicts                              # list both sides
+mise dot pull --take-remote ~/.zshrc            # accept the incoming version
+mise dot pull --keep-local ~/.zshrc             # keep this machine's version
+mise dot sync                                   # publish the resolution
+```
+
+Conflicts pause publication; nothing writes conflict markers into live files.
 
 ---
 
-## 2. `chezmoi add` → `mise dot add`
-
-### Adding a file you already have and want tracked
-
-Sources now live at the **repo root**, and `~/.dotfiles` is a symlink to this
-repo, so mise's `dotfiles.root` resolves here. That means the source lands in
-version control automatically — you only need `-p` so the *entry* goes to this
-repo's `mise.toml` rather than the global config:
+## Tasks
 
 ```bash
-# template
-mise dot add -p ./mise.toml ~/.config/foo/bar.toml
+mise tasks ls                 # list
+mise tasks info <task>        # detail: sources, outputs, dependencies
+mise run <task>               # run
+mise run --force <task>       # ignore freshness
+mise run a ::: b ::: c        # schedule several at once
 ```
 
-That does three things:
-1. copies `~/.config/foo/bar.toml` → `~/.dotfiles/.config/foo/bar.toml` (= this repo)
-2. writes `"~/.config/foo/bar.toml" = { mode = "copy" }` into `mise.toml`
-3. applies it
-
-⚠️ **The `-p` still matters.** Without it the *entry* is written to
-`~/.config/mise/config.toml` instead of this repo — the source is still
-version-controlled, but the declaration isn't:
-
-```
-$ mise dot add --dry-run ~/.poc-probe2
-~/.config/mise/config.toml: "~/.poc-probe2" = { mode = "copy" }   # ← wrong file
-cp ~/.poc-probe2 ~/.dotfiles/.poc-probe2                          # ← right place
-```
-
-**Habit to build:** `mise dot add -p ./mise.toml <target>`.
-
-### Capturing live edits back to the repo (`chezmoi re-add`)
-
-You edited `~/.zshrc` directly and want that to become the source of truth:
-
-```bash
-mise dot add ~/.zshrc              # already-managed file: captures to the repo source
-mise dot add --changed             # every drifted copy-mode file at once
-```
-
-Preview first — `--dry-run` never writes:
-
-```bash
-mise dot add --changed --dry-run
-```
-
-Output reads as the copy direction:
-
-```
-cp ~/.zshrc /home/pico/.local/share/chezmoi/dotfiles/.zshrc          # capture
-cp /home/pico/.local/share/chezmoi/dotfiles/.zshrc ~/.zshrc          # re-apply
-```
-
----
-
-## 3. Seeing what's going on
-
-```bash
-mise dot status                    # every dotfile: applied / differs / missing
-mise dot diff                      # unified diffs
-mise bootstrap status              # everything: packages, repos, units, shell
-mise bootstrap plan                # the declarative plan, resource by resource
-mise bootstrap plan | tail -1      # "Plan: N create, N update, N unchanged, ..."
-```
-
-`mise bootstrap plan` is the nicest overview — one line per resource:
-
-```
-unchanged  package:pacman:zsh        installed (5.9-6)   installed (any version)
-create     dotfile:~/.zshrc
-unknown    service:dev.mise.udiskie
-```
-
----
-
-## 4. Removing things
-
-| you want | do |
+| Task | Purpose |
 | --- | --- |
-| stop tracking a file, keep it on disk | delete its line from `[dotfiles]` in `mise.toml` |
-| remove a file mise deployed | `mise dot unapply <path>` (needs `--force` if you modified it) |
-| remove a package | delete the `[bootstrap.packages]` line, then `sudo pacman -Rns <pkg>` |
+| `zsh-setup` | install or update oh-my-zsh |
+| `omarchy-session` | run the omarchy-session upstream installer |
+| `displaylink` | DisplayLink dock setup; self-skips without hardware |
+| `bootstrap` | runs `zsh-setup` + `omarchy-session`; automatic at the end of `mise bootstrap` |
 
-Note: deleting an entry from the config does **not** remove the deployed file.
-The docs describe `mode = "absent"` for declarative removal, but **mise 2026.9.9
-does not implement it** (`unknown mode 'absent', ignoring entry` — verified).
-Use `mise dot unapply` instead.
+File tasks live in `mise-tasks/` and are discovered by filename. Metadata goes
+in `#MISE` comment directives:
+
+```bash
+#!/usr/bin/env bash
+#MISE description="What this does"
+#MISE sources=["input/**"]
+#MISE outputs={ auto = true }
+```
+
+`outputs = { auto = true }` keys freshness on a hash of the task definition,
+so the task is skipped when nothing changed and re-runs when the task is
+edited.
 
 ---
 
-## 5. Updating
+## Host packages
 
 ```bash
-# pull the repo and apply — the `chezmoi update` equivalent
-git pull && mise bootstrap
-
-# host packages: mise installs missing ones but does NOT upgrade every run
-mise bootstrap packages status            # what's missing
-mise bootstrap packages upgrade           # upgrade only the declared packages
-
-# ⚠️ on Arch, prefer a real full upgrade instead:
-sudo pacman -Syu
-# mise's `packages upgrade` is a partial upgrade, which Arch does not support.
-
-# dev tools
-mise outdated                            # what's behind
-mise upgrade                             # bump everything
-mise use -g node@24                      # bump one tool
-
-# git checkouts (zsh plugins, omarchy-session)
-mise bootstrap repos status
-mise bootstrap repos update              # fast-forward all
+mise bootstrap packages status              # declared vs installed
+mise bootstrap packages status --missing    # exit 1 on drift (useful in CI)
+mise bootstrap packages apply --dry-run
+mise bootstrap packages apply
+mise bootstrap packages use pacman:htop     # declare and install together
 ```
 
----
-
-## 6. Tasks (the imperative bits)
-
-```bash
-mise tasks ls            # list
-mise tasks info <name>   # detail
-mise run <name>          # run
-mise run --force <name>  # ignore freshness, force re-run
-```
-
-| task | what it does |
-| --- | --- |
-| `mise run zsh-setup` | install/update oh-my-zsh |
-| `mise run omarchy-session` | run omarchy-session's upstream installer |
-| `mise run displaylink` | DisplayLink dock setup (self-skips with no hardware) |
-| `mise run bootstrap` | runs `zsh-setup` + `omarchy-session`; mise runs this automatically at the end of `mise bootstrap` |
-
-### run-once / run-on-change
-
-chezmoi's `run_once_*` had a state DB. mise uses file freshness instead:
+Declarative removal:
 
 ```toml
-[tasks.something]
-run = "./do-it.sh"
-sources = ["input/**"]
-outputs = { auto = true }   # freshness keyed on a hash of THIS TASK DEFINITION
+[bootstrap.packages]
+"pacman:some-package" = { state = "absent" }
 ```
 
-- Skips when nothing changed.
-- Re-runs when you edit the task — that is `run_onchange_after_*` semantics.
-- `mise run --force something` re-runs regardless (replaces
-  `chezmoi state delete-bucket --bucket=scripts`).
+`"latest"` accepts an already-installed version — `apply` installs what is
+missing and does not upgrade on every run.
+
+> On Arch, upgrade with `sudo pacman -Syu`. `mise bootstrap packages upgrade`
+> updates only the declared packages, which is a partial upgrade and not
+> supported by the distribution.
 
 ---
 
-## 7. Machine profiles (Omarchy 3 vs 4)
-
-`mise.toml` describes the **Omarchy 3.x** host. On an Omarchy 4 "quattro" box,
-turn on the overlay once per machine:
+## Development tools
 
 ```bash
-echo 'env = ["omarchy4"]' > ~/.config/mise/miserc.local.toml
-```
-
-Or for a single command:
-
-```bash
-mise -E omarchy4 bootstrap
-```
-
-`mise.omarchy4.toml` layers the Lua hypr configs on top. Verified:
-
-```
-$ mise dot status | grep hypr        # base:      .conf only
-$ mise -E omarchy4 dot status | grep hypr   # overlay: .conf + .lua
-```
-
-Why a profile and not a conditional: chezmoi used
-`{{ if stat "/usr/share/omarchy/default/hypr/omarchy.lua" }}`. mise's
-`[dotfiles]` `source` values are **not templated** (the `{{ }}` is taken
-literally — verified), and `variants` select on os/arch/profile only. Both
-machines are `linux-x64`, so platform detection can't separate them.
-
----
-
-## 8. Handy one-offs
-
-```bash
-mise doctor                          # health check
-mise config                          # which config files are loaded
-mise env                             # the env mise would export
-mise exec -- <cmd>                   # run a command with mise's tools on PATH
-mise which node                      # which binary wins
-mise ls                              # installed tool versions
-mise settings ls                     # effective settings
+mise ls                # installed and active versions
+mise outdated          # what is behind
+mise upgrade           # bump everything
+mise use -g node@24    # set one tool globally
+mise which node        # which binary wins
+mise where node        # install path
+mise exec -- <cmd>     # run with the configured tools on PATH
 ```
 
 ---
 
-## 9. Cheat sheet
+## Git checkouts
 
 ```bash
-cd ~/.local/share/chezmoi
+mise bootstrap repos status
+mise bootstrap repos apply            # clone missing, update where safe
+mise bootstrap repos update           # fast-forward existing checkouts
+mise bootstrap repos exec -- git status
+```
 
-mise trust .                                 # after editing mise.toml
-mise bootstrap                               # apply everything
-mise bootstrap --dry-run                     # preview everything (verified non-mutating)
-mise dot apply                               # apply just the files
-mise dot diff                                # diff the files
-mise dot status                              # file states
-mise dot add -p ./mise.toml ~/X                 # track a new file
-mise dot add --changed                       # capture all live edits (chezmoi re-add)
-mise dot unapply ~/X                         # remove a deployed file
-mise run <task>                              # run a task
-mise run --force <task>                      # force it
-mise bootstrap status                        # whole-machine status
-git pull && mise bootstrap                   # chezmoi update
+Updates only happen when the worktree is clean and the origin matches. Dirty
+checkouts are reported rather than reset; `--skip-dirty` skips them and updates
+the rest.
+
+---
+
+## systemd user units
+
+```bash
+mise bootstrap linux systemd-units status
+mise bootstrap linux systemd-units apply --dry-run
+mise bootstrap linux systemd-units apply
+```
+
+`apply` rewrites changed unit files, runs `systemctl --user daemon-reload`,
+enables units per `wanted_by`, and restarts them when `start = true`. mise
+writes `~/.config/systemd/user/dev.mise.<name>.service` and owns only files
+with that prefix.
+
+---
+
+## Login shell and accounts
+
+```bash
+mise bootstrap user status
+mise bootstrap user apply --dry-run
+mise bootstrap user apply
+
+mise bootstrap accounts status
+mise bootstrap accounts apply --dry-run
+```
+
+`user apply` appends the configured shell to `/etc/shells` if needed and runs
+`chsh -s`. Accounts changes touch the system account database — always read the
+dry run first.
+
+---
+
+## Profiles
+
+```bash
+mise -E omarchy4 bootstrap              # one command
+echo 'env = ["omarchy4"]' > ~/.config/mise/miserc.local.toml   # per machine
+mise config                             # show which files are loaded
+```
+
+Any configuration section can be overridden per profile in
+`mise.<env>.toml` / `config.<env>.toml`.
+
+---
+
+## Diagnostics
+
+```bash
+mise doctor                             # installation and configuration health
+mise config                             # loaded configuration files
+mise env                                # the environment mise would export
+mise settings ls                        # effective settings
+systemctl --user status dev.mise.mise-history.service    # watcher status
+```
+
+If the watcher stops:
+
+```bash
+systemctl --user reset-failed dev.mise.mise-history.service
+mise bootstrap services apply
 ```
 
 ---
 
-## 10. What mise does better here
+## Cheat sheet
 
-- **`[dotfiles]` is an allow-list** — no `.chezmoiignore` needed. Repo-only files
-  (this guide, `mise.toml`, `mise-tasks/`) simply have no entry.
-- **`mise bootstrap plan`** gives a one-line-per-resource view of the whole
-  machine, not just files.
-- **`--dry-run` is genuinely non-mutating** — verified: nothing is created,
-  including by the bootstrap task.
-- **Packages know about the package DB.** `"latest"` accepts an already-installed
-  version, so fonts and other non-executable packages don't get reinstalled every
-  run (the bug the old `command -v` check had).
-- **systemd units converge themselves** — `apply` does `daemon-reload` + `enable`
-  + `restart`, which is what both `run_onchange_after_apply-systemd-*` scripts
-  hand-rolled.
-- **fnm is gone.** `[tools] node` + `npm:` tools means no `fnm env`, no
-  `PNPM_HOME` case-statement, no `unalias pi`.
+```bash
+# configuration
+mise trust ~/.config/mise/config.toml
+mise bootstrap
+mise bootstrap --dry-run
+mise bootstrap status
 
-## 11. What you lose / watch out for
+# dotfiles
+mise dot status
+mise dot diff
+mise dot track ~/.config/foo/bar.toml
+mise dot track --dry-run ~/.config/foo
+mise dot save
+mise dot history --path ~/.zshrc
+mise dot rollback ~/.zshrc
+mise dot undo
+mise dot untrack ~/.config/foo/bar.toml
 
-- **`mise dot add` needs `-p ./mise.toml`** or the entry lands in
-  `~/.config/mise/config.toml` instead of this repo. The *source* is fine
-  (the `~/.dotfiles` symlink keeps it version-controlled); only the
-  declaration escapes.
-- **No `mode = "absent"`** in 2026.9.9 — removal is `mise dot unapply`.
-- **No `PartOf` / `BindsTo` / `Before` / `Conflicts` / `ExecStartPre` /
-  `ExecStartPost` / `ExecStopPost`** in the 2026.9.9 unit schema, despite the
-  docs listing them. The omarchy-session unit lost `PartOf=graphical-session.target`
-  (it still stops at logout; only "stops when the graphical session ends while
-  the user session survives" is missing).
-- **No `LogLevelMax`** for units either.
-- **Directory `copy` is additive** — delete a source file and the deployed copy
-  stays. `mise dot status` won't flag it. (Use `manifest = "git"` with
-  `symlink-each` if you want removal tracked.)
-- **Copy mode overwrites target edits without warning.** Diff before applying.
-- **This surface is ~3 months old** and has already deprecated its own top-level
-  command once (`mise dotfiles` → `mise bootstrap dotfiles`, removal 2028.2.0).
-  Expect it to keep moving.
+# tasks
+mise tasks ls
+mise run <task>
+mise run --force <task>
+
+# packages / tools / repos
+mise bootstrap packages status
+mise bootstrap packages use pacman:htop
+mise outdated
+mise use -g node@24
+mise bootstrap repos update
+
+# sharing
+mise dot origin set <private-repo-url>
+mise dot sync
+mise bootstrap --adopt <private-repo-url>
+```
