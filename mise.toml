@@ -162,6 +162,7 @@ login_shell = "/usr/bin/zsh"
 # --- terminal ------------------------------------------------------------
 "~/.wezterm.lua" = { source = ".wezterm.lua", mode = "copy" }
 "~/.config/alacritty" = { source = ".config/alacritty", mode = "copy" }
+"~/.config/ghostty" = { source = ".config/ghostty", mode = "copy" }
 
 # --- git -----------------------------------------------------------------
 "~/.config/git" = { source = ".config/git", mode = "copy" }
