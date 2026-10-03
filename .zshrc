@@ -7,19 +7,6 @@ source ~/.profile
 # mise (toolchain, PATH, shims)
 eval "$(mise activate zsh)"
 
-# fnm (Fast Node Manager) setup
-export PATH=/home/$USER/.fnm:$PATH
-eval "$(fnm env --use-on-cd --version-file-strategy=recursive)"
-
-
-# pnpm (Package Manager) setup
-export PNPM_HOME="$HOME/.local/share/pnpm"
-# pnpm >= 12 installs global binaries into $PNPM_HOME/bin; keep it ahead of the
-# legacy $PNPM_HOME dir so newly installed versions shadow old shims.
-case ":$PATH:" in
-  *":$PNPM_HOME/bin:"*) ;;
-  *) export PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH" ;;
-esac
 
 # Preferred editor for local and remote sessions
 export EDITOR=nvim

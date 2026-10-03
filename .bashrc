@@ -15,10 +15,6 @@ if [ -x "/usr/bin/exa" ]; then alias ll="exa -l"; else alias ll="ls -alh"; fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-# fnm
-export PATH="$HOME/.fnm:$PATH"
-eval "$(fnm env)"
-
 # Starship prompt
 eval "$(starship init bash)"
 
@@ -26,15 +22,7 @@ eval "$(starship init bash)"
 [ -s "/usr/share/fzf/key-bindings.bash" ] && source "/usr/share/fzf/key-bindings.bash"
 [ -s "/usr/share/fzf/completion.bash" ] && source "/usr/share/fzf/completion.bash"
 
-# pnpm
-export PNPM_HOME="$HOME/.local/share/pnpm"
-# pnpm >= 12 installs global binaries into $PNPM_HOME/bin; keep it ahead of the
-# legacy $PNPM_HOME dir so newly installed versions shadow old shims.
-export PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
 export PATH="$PATH:$HOME/.config/composer/vendor/bin"
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 
 . "$HOME/.atuin/bin/env"
 

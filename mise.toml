@@ -18,6 +18,11 @@
 # Settings
 # --------------------------------------------------------------------------
 [settings]
+# Read .nvmrc / .node-version (node) and the `packageManager` field in
+# package.json (pnpm), so each project pins its own runtime. This replaces the
+# old `fnm env --use-on-cd --version-file-strategy=recursive` behaviour.
+idiomatic_version_file_enable_tools = ["node", "pnpm"]
+
 # Keep mise quiet about version bumps; check with `mise outdated` deliberately.
 # (Remove if you prefer the reminders.)
 
