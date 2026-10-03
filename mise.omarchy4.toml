@@ -1,37 +1,29 @@
 # ===========================================================================
-# mise.omarchy4.toml — overlay for Omarchy 4 "quattro"
+# Profile overlay: Omarchy 4 "quattro"
 # ===========================================================================
-# Loaded IN ADDITION to mise.toml when the `omarchy4` profile is active:
+# Omarchy 4 is package-backed (/usr/share/omarchy) and configured in Lua,
+# where Omarchy 3 uses hyprlang and ~/.local/share/omarchy. Hyprland 0.55+
+# prefers hyprland.lua over hyprland.conf whenever both exist, so only one set
+# should be captured per machine.
 #
-#   per-machine (preferred):
-#     echo 'env = ["omarchy4"]' > ~/.config/mise/miserc.local.toml
-#   or one-off:
-#     mise -E omarchy4 bootstrap
+# Activate the profile per machine:
 #
-# Why a profile and not a conditional: chezmoi picked the config set with
-# `{{ if stat "/usr/share/omarchy/default/hypr/omarchy.lua" }}`. mise's
-# [dotfiles] `source` values are NOT templated (verified on 2026.9.9 — the
-# {{ }} is taken literally), and `variants` select on os/arch/profile only —
-# there is no "file exists" selector. Both the host and the quattro VM are
-# linux-x64, so platform auto-detection cannot tell them apart either.
+#   echo 'env = ["omarchy4"]' > ~/.config/mise/miserc.local.toml
 #
-# One line of per-machine setup replaces the stat() call.
+# or for a single command:
 #
-# Omarchy 4 is package-backed (/usr/share/omarchy) and configured in Lua;
-# Hyprland 0.55+ prefers hyprland.lua over hyprland.conf whenever both exist.
+#   mise -E omarchy4 bootstrap
+#
+# This file must be installed next to the main config as
+# ~/.config/mise/config.omarchy4.toml for the profile to be found.
+#
+# Entries merge by target path, so this replaces the base entry for
+# ~/.config/hypr entirely — the base exclusions are repeated here.
 # --------------------------------------------------------------------------
 
 [dotfiles]
-"~/.config/hypr/hyprland.lua" = { source = ".config/hypr/hyprland.lua" }
-"~/.config/hypr/bindings.lua" = { source = ".config/hypr/bindings.lua" }
-"~/.config/hypr/input.lua" = { source = ".config/hypr/input.lua" }
-"~/.config/hypr/autostart.lua" = { source = ".config/hypr/autostart.lua" }
-
-# What about the Omarchy 3 .conf files? They stay on disk on a quattro box.
-# The docs describe `mode = "absent"` for exactly this, but mise 2026.9.9 does
-# not implement it yet ("unknown mode 'absent', ignoring entry" — verified).
-# This is acceptable: Hyprland 0.55+ ignores hyprland.conf entirely when
-# hyprland.lua is present, so the .conf set is inert — the same practical
-# outcome as chezmoi's `.chezmoiignore`, which also never deleted them.
-# Once you are on a mise that supports it, add for each file:
-#   "~/.config/hypr/hyprland.conf" = { mode = "absent" }
+"~/.config/hypr" = { mode = "track", exclude = [
+  "monitors.conf",
+  "monitors.lua",
+  "*.conf",          # Omarchy 3 set: not used on quattro
+] }
