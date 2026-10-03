@@ -1,5 +1,7 @@
-# Dynamic theme colors
-config-file = ?"~/.config/omarchy/current/theme/ghostty.conf"
+# Theme: explicit dracula palette below is the single source of truth.
+# Omarchy's dynamic theme hook (omarchy/current/theme/ghostty.conf) is
+# deliberately NOT loaded — `omarchy theme` changes must not move our
+# terminal colors.
 
 # Font
 font-family = "JetBrains Mono"
