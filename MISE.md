@@ -56,38 +56,32 @@ mise dot status
 
 ### Adding a file you already have and want tracked
 
-This is the one you'll use most. **Always pass `-p` and `-s`** or the entry goes
-to the *global* mise config instead of this repo (see the gotcha below).
+Sources now live at the **repo root**, and `~/.dotfiles` is a symlink to this
+repo, so mise's `dotfiles.root` resolves here. That means the source lands in
+version control automatically — you only need `-p` so the *entry* goes to this
+repo's `mise.toml` rather than the global config:
 
 ```bash
-# template — replace both path segments
-mise dot add -p ./mise.toml -s dotfiles/.config/foo/bar.toml ~/.config/foo/bar.toml
+# template
+mise dot add -p ./mise.toml ~/.config/foo/bar.toml
 ```
 
 That does three things:
-1. copies `~/.config/foo/bar.toml` → `dotfiles/.config/foo/bar.toml`
-2. writes `"~/.config/foo/bar.toml" = { source = "dotfiles/.config/foo/bar.toml" }` into `mise.toml`
+1. copies `~/.config/foo/bar.toml` → `~/.dotfiles/.config/foo/bar.toml` (= this repo)
+2. writes `"~/.config/foo/bar.toml" = { mode = "copy" }` into `mise.toml`
 3. applies it
 
-⚠️ **Gotcha.** Without `-p`/`-s`, a *new* entry is written to
-`~/.config/mise/config.toml` and its source seeded to `~/.dotfiles/` — outside
-this repo. Verified on 2026.9.9:
+⚠️ **The `-p` still matters.** Without it the *entry* is written to
+`~/.config/mise/config.toml` instead of this repo — the source is still
+version-controlled, but the declaration isn't:
 
 ```
-$ mise dot add --dry-run ~/.poc-probe
-~/.config/mise/config.toml: "~/.poc-probe" = { mode = "copy" }
-cp ~/.poc-probe ~/.dotfiles/.poc-probe        # ← not the repo
+$ mise dot add --dry-run ~/.poc-probe2
+~/.config/mise/config.toml: "~/.poc-probe2" = { mode = "copy" }   # ← wrong file
+cp ~/.poc-probe2 ~/.dotfiles/.poc-probe2                          # ← right place
 ```
 
-With the flags it does what you want:
-
-```
-$ mise dot add --dry-run -p ./mise.toml -s dotfiles/.poc-probe ~/.poc-probe
-~/.local/share/chezmoi/mise.toml: "~/.poc-probe" = { source = "dotfiles/.poc-probe", mode = "copy" }
-cp ~/.poc-probe dotfiles/.poc-probe           # ← the repo
-```
-
-**Habit to build:** `mise dot add -p ./mise.toml -s dotfiles/<path> <target>`.
+**Habit to build:** `mise dot add -p ./mise.toml <target>`.
 
 ### Capturing live edits back to the repo (`chezmoi re-add`)
 
@@ -263,7 +257,7 @@ mise bootstrap --dry-run                     # preview everything (verified non-
 mise dot apply                               # apply just the files
 mise dot diff                                # diff the files
 mise dot status                              # file states
-mise dot add -p ./mise.toml -s dotfiles/X ~/X   # track a new file
+mise dot add -p ./mise.toml ~/X                 # track a new file
 mise dot add --changed                       # capture all live edits (chezmoi re-add)
 mise dot unapply ~/X                         # remove a deployed file
 mise run <task>                              # run a task
@@ -293,8 +287,10 @@ git pull && mise bootstrap                   # chezmoi update
 
 ## 11. What you lose / watch out for
 
-- **`mise dot add` needs `-p`/`-s`** for new files or it escapes to
-  `~/.config/mise/config.toml` + `~/.dotfiles/`.
+- **`mise dot add` needs `-p ./mise.toml`** or the entry lands in
+  `~/.config/mise/config.toml` instead of this repo. The *source* is fine
+  (the `~/.dotfiles` symlink keeps it version-controlled); only the
+  declaration escapes.
 - **No `mode = "absent"`** in 2026.9.9 — removal is `mise dot unapply`.
 - **No `PartOf` / `BindsTo` / `Before` / `Conflicts` / `ExecStartPre` /
   `ExecStartPost` / `ExecStopPost`** in the 2026.9.9 unit schema, despite the

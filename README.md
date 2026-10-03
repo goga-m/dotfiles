@@ -16,8 +16,9 @@ validated against **2026.9.9** from Arch `extra`.
 # 1. mise (Arch)
 sudo pacman -S --needed mise        # needs >= 2026.7.4; extra has 2026.9.9
 
-# 2. clone, trust, bootstrap
+# 2. clone, point ~/.dotfiles at it, trust, bootstrap
 git clone <repo> ~/.local/share/chezmoi
+ln -s ~/.local/share/chezmoi ~/.dotfiles     # mise's default dotfiles.root
 cd ~/.local/share/chezmoi
 mise trust .
 mise bootstrap
@@ -47,19 +48,26 @@ Full list in [MISE.md](./MISE.md).
 
 ## Layout
 
+mise-native: **the repo root is the dotfiles root**, and `~/.dotfiles` is a
+symlink to this repo so `dotfiles.root` resolves here.
+
 | Path | What it is |
 | --- | --- |
 | `mise.toml` | the whole machine: tools, packages, env, dotfiles, systemd units, tasks |
 | `mise.omarchy4.toml` | overlay for Omarchy 4 "quattro" (Lua hypr configs) |
-| `dotfiles/` | the sources, mirroring `$HOME` paths 1:1 |
 | `mise-tasks/` | file-tasks for the parts that stay imperative |
+| `.zshrc` `.bashrc` `.profile` `.tigrc` `.wezterm.lua` | top-level sources, mirroring `$HOME` |
+| `.config/` | everything under `~/.config`, same tree shape |
 | `MISE.md` | daily-use guide |
 | `docs/mise-research.md` | the chezmoi→mise capability research this branch came out of |
 
-`dotfiles/` replaces chezmoi's `dot_` / `dot_config_` filename encoding — mise
-mirrors real `$HOME` paths, and every entry is declared explicitly in
-`[dotfiles]`. That allow-list is the replacement for `.chezmoiignore`: repo-only
-files simply never get an entry.
+This replaces chezmoi's `dot_` / `dot_config_` filename encoding — mise mirrors
+real `$HOME` paths, and every entry is declared in `[dotfiles]`. That
+allow-list is the replacement for `.chezmoiignore`: repo-only files simply never
+get an entry.
+
+Because `dotfiles.root` reaches the repo through the `~/.dotfiles` symlink,
+`mise dot add` seeds new sources into version control without needing `-s`.
 
 ## What replaced what
 
@@ -116,6 +124,17 @@ behaviourally in sync, not mechanically generated from each other.
 
 ## Notes
 
+- **`~/.dotfiles` must be a symlink to this repo** (see Install). Without it
+  `dotfiles.root` points at a directory that doesn't exist and `mise dot add`
+  has nowhere to seed new sources.
+- **`chezmoi apply` on this branch is a deliberate no-op.** `.chezmoiignore`
+  contains `*` so a stray `chezmoi apply` cannot dump the mise source tree into
+  `$HOME`. The real chezmoi setup is on `master`.
+- **You still have to `cd` into this repo** for mise to see the config — it is
+  project-local, not global. Going global needs two more symlinks
+  (`~/.config/mise/config.toml` → `mise.toml`, `config.omarchy4.toml` →
+  `mise.omarchy4.toml`) plus dropping the explicit `source =` keys so entries
+  resolve through `dotfiles.root` instead of the config file's directory.
 - **Machine-specific files are intentionally undeclared**: `hypr/monitors.conf`,
   `hypr/monitors.lua`, `vifm/vifminfo.json`, `aichat/config.yaml`,
   `opencode/opencode.json`. Create them by hand per machine — mise never touches

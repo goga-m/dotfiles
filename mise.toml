@@ -2,11 +2,18 @@
 # dotfiles — managed with mise (PoC replacing chezmoi)
 # ===========================================================================
 #
-# Layout
+# Layout (mise-native: the repo root IS the dotfiles root)
 #   mise.toml              this file — always loaded when you run mise from here
 #   mise.omarchy4.toml     overlay for Omarchy 4 "quattro" (Lua hypr configs)
-#   dotfiles/              the sources, mirroring $HOME paths 1:1
 #   mise-tasks/            file-tasks for the imperative leftovers
+#   .zshrc .bashrc .profile .tigrc .wezterm.lua .config/ ...
+#                          the sources, mirroring $HOME paths 1:1
+#
+# `~/.dotfiles` is a symlink to this repo, which is what makes mise's default
+# dotfiles.root resolve here:
+#   ln -s ~/.local/share/chezmoi ~/.dotfiles
+# so `~/.zshrc` finds its source at ~/.dotfiles/.zshrc, and
+# `mise dot add ~/.config/foo` seeds it into the repo without -s.
 #
 # Run everything from this directory:
 #   mise bootstrap --dry-run     preview
@@ -27,6 +34,11 @@
 # Capture live edits back with `mise dot add --changed`.
 # Set this to "symlink" if you'd rather have stow-style links.
 dotfiles.default_mode = "copy"
+
+# Where `mise dot add` seeds sources when you don't pass -s, and where sources
+# are inferred from when you omit `source`. Points at the ~/.dotfiles symlink
+# into this repo, so new files land in version control by default.
+dotfiles.root = "~/.dotfiles"
 
 # --------------------------------------------------------------------------
 # Dev toolchain — replaces fnm + `npm install -g`
@@ -159,41 +171,41 @@ login_shell = "/usr/bin/zsh"
 [dotfiles]
 
 # --- shell ---------------------------------------------------------------
-"~/.zshrc" = { source = "dotfiles/.zshrc" }
-"~/.bashrc" = { source = "dotfiles/.bashrc" }
-"~/.profile" = { source = "dotfiles/.profile" }
-"~/.config/zsh" = { source = "dotfiles/.config/zsh" }
+"~/.zshrc" = { source = ".zshrc" }
+"~/.bashrc" = { source = ".bashrc" }
+"~/.profile" = { source = ".profile" }
+"~/.config/zsh" = { source = ".config/zsh" }
 
 # --- terminal ------------------------------------------------------------
-"~/.wezterm.lua" = { source = "dotfiles/.wezterm.lua" }
-"~/.config/alacritty" = { source = "dotfiles/.config/alacritty" }
+"~/.wezterm.lua" = { source = ".wezterm.lua" }
+"~/.config/alacritty" = { source = ".config/alacritty" }
 
 # --- git -----------------------------------------------------------------
-"~/.config/git" = { source = "dotfiles/.config/git" }
+"~/.config/git" = { source = ".config/git" }
 
 # --- prompt --------------------------------------------------------------
-"~/.config/starship.toml" = { source = "dotfiles/.config/starship.toml" }
+"~/.config/starship.toml" = { source = ".config/starship.toml" }
 
 # --- editors / file managers ---------------------------------------------
-"~/.config/nvim" = { source = "dotfiles/.config/nvim" }
-"~/.tigrc" = { source = "dotfiles/.tigrc" }
-"~/.config/vifm" = { source = "dotfiles/.config/vifm" }
-"~/.config/yazi" = { source = "dotfiles/.config/yazi" }
+"~/.config/nvim" = { source = ".config/nvim" }
+"~/.tigrc" = { source = ".tigrc" }
+"~/.config/vifm" = { source = ".config/vifm" }
+"~/.config/yazi" = { source = ".config/yazi" }
 
 # --- window managers -----------------------------------------------------
-"~/.config/i3" = { source = "dotfiles/.config/i3" }
+"~/.config/i3" = { source = ".config/i3" }
 
 # Hyprland: the .conf set below is for Omarchy 3.x. On Omarchy 4 quattro the
 # Lua set in mise.omarchy4.toml takes over instead — Hyprland 0.55+ prefers
 # hyprland.lua over hyprland.conf whenever both exist, so deploying both would
 # be wrong. (chezmoi picked with `stat()`; [dotfiles] sources are not
 # templated, so this is done with a mise profile instead.)
-"~/.config/hypr/hyprland.conf" = { source = "dotfiles/.config/hypr/hyprland.conf" }
-"~/.config/hypr/bindings.conf" = { source = "dotfiles/.config/hypr/bindings.conf" }
-"~/.config/hypr/input.conf" = { source = "dotfiles/.config/hypr/input.conf" }
-"~/.config/hypr/tiling.conf" = { source = "dotfiles/.config/hypr/tiling.conf" }
-"~/.config/hypr/workspaces.conf" = { source = "dotfiles/.config/hypr/workspaces.conf" }
-"~/.config/hypr/autostart.conf" = { source = "dotfiles/.config/hypr/autostart.conf" }
+"~/.config/hypr/hyprland.conf" = { source = ".config/hypr/hyprland.conf" }
+"~/.config/hypr/bindings.conf" = { source = ".config/hypr/bindings.conf" }
+"~/.config/hypr/input.conf" = { source = ".config/hypr/input.conf" }
+"~/.config/hypr/tiling.conf" = { source = ".config/hypr/tiling.conf" }
+"~/.config/hypr/workspaces.conf" = { source = ".config/hypr/workspaces.conf" }
+"~/.config/hypr/autostart.conf" = { source = ".config/hypr/autostart.conf" }
 # monitors.conf is machine-specific — deliberately not declared here. Create it
 # by hand per machine; mise will never touch it.
 
@@ -203,9 +215,9 @@ login_shell = "/usr/bin/zsh"
 # happened yet), and the old script only ever copied it once anyway.
 # Provenance: https://github.com/dracula/rofi  theme/config1.rasi @ main
 # Refresh with:
-#   curl -fsSL -o dotfiles/.config/rofi/config.rasi \
+#   curl -fsSL -o .config/rofi/config.rasi \
 #     https://raw.githubusercontent.com/dracula/rofi/main/theme/config1.rasi
-"~/.config/rofi/config.rasi" = { source = "dotfiles/.config/rofi/config.rasi" }
+"~/.config/rofi/config.rasi" = { source = ".config/rofi/config.rasi" }
 
 # ===========================================================================
 # systemd user units — replaces the hand-written unit files AND both

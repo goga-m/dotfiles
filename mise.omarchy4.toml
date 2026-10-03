@@ -22,10 +22,10 @@
 # --------------------------------------------------------------------------
 
 [dotfiles]
-"~/.config/hypr/hyprland.lua" = { source = "dotfiles/.config/hypr/hyprland.lua" }
-"~/.config/hypr/bindings.lua" = { source = "dotfiles/.config/hypr/bindings.lua" }
-"~/.config/hypr/input.lua" = { source = "dotfiles/.config/hypr/input.lua" }
-"~/.config/hypr/autostart.lua" = { source = "dotfiles/.config/hypr/autostart.lua" }
+"~/.config/hypr/hyprland.lua" = { source = ".config/hypr/hyprland.lua" }
+"~/.config/hypr/bindings.lua" = { source = ".config/hypr/bindings.lua" }
+"~/.config/hypr/input.lua" = { source = ".config/hypr/input.lua" }
+"~/.config/hypr/autostart.lua" = { source = ".config/hypr/autostart.lua" }
 
 # What about the Omarchy 3 .conf files? They stay on disk on a quattro box.
 # The docs describe `mode = "absent"` for exactly this, but mise 2026.9.9 does
