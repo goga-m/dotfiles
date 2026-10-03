@@ -250,10 +250,13 @@ dry run first.
 
 ## Profiles
 
+This setup uses no profiles — both hypr config sets ship everywhere and
+Hyprland's version precedence picks per machine. mise profiles still
+exist if ever needed:
+
 ```bash
-mise -E omarchy4 bootstrap          # one command
-MISE_ENV=omarchy4 mise bootstrap    # or from the shell profile
-mise config                         # which files are loaded
+mise -E work bootstrap            # loads mise.work.toml / config.work.toml
+mise config                       # which files are loaded
 ```
 
 Any section can be overridden per profile in `config.<env>.toml`.

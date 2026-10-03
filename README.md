@@ -2,41 +2,39 @@
 
 Arch Linux (Hyprland / i3), managed by mise.
 
+Dotfiles are `copy`-mode entries in `mise.toml`: the repo holds the
+sources, `mise bootstrap` copies them onto the live paths. Both Hyprland
+config sets (hyprlang `.conf` and Omarchy 4 `.lua`) ship everywhere —
+Hyprland's own version precedence picks the right one per machine, so no
+profiles or env vars are needed.
+
 ## New machine
 
 ```bash
 sudo pacman -S --needed git mise
-mise bootstrap --adopt https://github.com/goga-m/dotfiles
+git clone https://github.com/goga-m/dotfiles ~/.config/mise
+mise bootstrap
 ```
 
 Log out, log back in. That's the install.
 
-**If `~/.config/mise` already exists** (it does as soon as mise has run once)
-and isn't a git checkout, adopt refuses. Move it aside and run the same command:
+**If `~/.config/mise` already exists** (it does as soon as mise has run
+once) and isn't a git checkout, move it aside first:
 
 ```bash
 mv ~/.config/mise ~/.config/mise.bak
-mise bootstrap --adopt https://github.com/goga-m/dotfiles
-```
-
-**If bootstrap stops on conflicting files** — the machine already has a
-`~/.zshrc` that differs from the repo's version:
-
-```bash
-mise dot pull --take-remote-all
+git clone https://github.com/goga-m/dotfiles ~/.config/mise
 mise bootstrap
 ```
 
-**On an Omarchy 4 "quattro" machine**, select the profile before bootstrapping:
-
-```bash
-echo 'export MISE_ENV=omarchy4' >> ~/.zshrc
-mise bootstrap
-```
+Note: `copy` overwrites the live targets (`~/.zshrc` etc.) on every
+bootstrap. Machine-local files the repo doesn't declare
+(`~/.config/git/config.local`, `~/.config/exa/env`, `monitors.*`, …)
+are never touched.
 
 ## Changing anything
 
-Edit `~/.config/mise/mise.toml`, then:
+Edit the source in `~/.config/mise` (e.g. `./.zshrc`), then:
 
 ```bash
 mise bootstrap
@@ -48,6 +46,13 @@ Preview first if unsure:
 mise bootstrap --dry-run
 ```
 
+If you edited a live file directly (e.g. tweaked something in the VM),
+capture it back into the repo before applying elsewhere:
+
+```bash
+mise dot add --changed
+```
+
 Push your change back so other machines get it:
 
 ```bash
@@ -57,7 +62,7 @@ git -C ~/.config/mise push
 
 ## Undo
 
-History is plain git — the live files link straight into this repo:
+History is plain git:
 
 ```bash
 git -C ~/.config/mise log --oneline -- .zshrc
@@ -72,7 +77,7 @@ The repository **is** `~/.config/mise`. Clone it there and everything lines up.
 | Path | Role |
 | --- | --- |
 | `mise.toml` | the machine: tools, packages, dotfiles, services, tasks |
-| `mise.omarchy4.toml` | Omarchy 4 "quattro" overlay |
+| `.zshrc`, `.config/…` | dotfile sources, copied to the matching home paths |
 | `tasks/` | file tasks that stay imperative |
 | `config.local.toml` | machine-local, mise writes here — do not commit |
 

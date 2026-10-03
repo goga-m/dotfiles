@@ -6,8 +6,7 @@
 # what makes `mise` work from any directory, and it is the only scope where
 # `[dotfiles]` tracking is honored.
 #
-#   ~/.config/mise/config.toml            this file — the machine
-#   ~/.config/mise/config.omarchy4.toml  profile overlay for Omarchy 4 "quattro"
+#   ~/.config/mise/mise.toml      this file — the machine
 #   ~/.config/mise/tasks/                file tasks that stay imperative
 #
 # Dotfiles use whole-file `copy` entries, exactly as in the mise docs
@@ -177,10 +176,12 @@ login_shell = "/usr/bin/zsh"
 "~/.config/yazi" = { source = ".config/yazi", mode = "copy" }
 
 # --- window managers -----------------------------------------------------
-# The base machine runs the Omarchy 3 (hyprlang) set. Hyprland 0.55+
-# prefers hyprland.lua whenever both exist, so exactly one set is copied
-# per machine; the omarchy4 overlay replaces this entry with the Lua set.
-"~/.config/hypr" = { source = ".config/hypr", mode = "copy", exclude = ["*.lua"] }
+# Both hypr sets ship everywhere and Hyprland's own version precedence
+# picks the right one per machine: < 0.55 (host, 0.54.3) reads the
+# hyprlang .conf set and ignores .lua; Omarchy 4 (0.55+) prefers
+# hyprland.lua over hyprland.conf. No profile/env needed. Machine-local
+# files the repo doesn't have (monitors.*) are left alone by the copy.
+"~/.config/hypr" = { source = ".config/hypr", mode = "copy" }
 "~/.config/i3" = { source = ".config/i3", mode = "copy" }
 
 # --- launcher theme ------------------------------------------------------
