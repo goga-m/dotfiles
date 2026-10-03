@@ -2,12 +2,13 @@
 # mise configuration
 # ===========================================================================
 #
-# Installed as ~/.config/mise/config.toml (see README.md). Keeping it global is
-# what makes `mise` work from any directory.
+# Lives at ~/.config/mise/config.toml — mise's global configuration. Global is
+# what makes `mise` work from any directory, and it is the only scope where
+# `[dotfiles]` tracking is honored.
 #
-#   mise.toml              this file — the machine configuration
-#   mise.omarchy4.toml     profile overlay for Omarchy 4 "quattro"
-#   mise-tasks/            file tasks for steps that stay imperative
+#   ~/.config/mise/config.toml            this file — the machine
+#   ~/.config/mise/config.omarchy4.toml  profile overlay for Omarchy 4 "quattro"
+#   ~/.config/mise/tasks/                file tasks that stay imperative
 #
 # Dotfiles use `mode = "track"`: live files stay exactly where they are, mise
 # records checkpoints of them, and a watcher service saves edits automatically.

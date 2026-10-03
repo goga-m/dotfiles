@@ -4,6 +4,9 @@
 #
 source ~/.profile
 
+# mise (toolchain, PATH, shims)
+eval "$(mise activate zsh)"
+
 # fnm (Fast Node Manager) setup
 export PATH=/home/$USER/.fnm:$PATH
 eval "$(fnm env --use-on-cd --version-file-strategy=recursive)"

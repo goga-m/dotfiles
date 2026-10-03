@@ -1,296 +1,58 @@
 # dotfiles
 
-Development environment and dotfiles managed entirely with
-[mise](https://mise.jdx.dev/) — toolchain, host packages, shell configuration,
-desktop configuration, systemd user services, and setup tasks in one
-declarative configuration.
+Arch Linux (Hyprland / i3), managed by mise.
 
-Target: **Arch Linux** (Wayland / Hyprland, plus i3).
-
-## Requirements
-
-mise **≥ 2026.7.4**, the release in which `mise bootstrap` and `[dotfiles]`
-became stable. Verified against **2026.9.9**.
+## New machine
 
 ```bash
-mise --version
+sudo pacman -S --needed git mise
+mise bootstrap --adopt https://github.com/<you>/dotfiles
 ```
 
-## Install
+Log out, log back in. That's the install.
 
-Two paths, depending on whether a shared history repository already exists.
-
-### Additional machine — shared history exists
-
-```bash
-curl https://mise.run | sh
-mise bootstrap --adopt <private-repo-url>
-```
-
-`--adopt` restores the tracked files and configuration from the repository,
-holds anything that conflicts with existing files for a decision, then runs the
-bootstrap. See [Sharing](#sharing).
-
-### First machine — no shared history yet
-
-**1. Install mise** (≥ 2026.7.4)
+**If adoption stops and says files conflict** (the machine already has a
+`~/.zshrc` or similar that differs from the repo):
 
 ```bash
-sudo pacman -S --needed mise
-```
-
-**2. Clone the repository**
-
-```bash
-git clone <repo> ~/src/dotfiles
-```
-
-**3. Point the global mise configuration at the repository**
-
-```bash
-mkdir -p ~/.config/mise
-ln -s ~/src/dotfiles/mise.toml ~/.config/mise/config.toml
-```
-
-This symlink is a **rename**. mise reads its global configuration from
-`~/.config/mise/config.toml`, but the repository keeps the file named
-`mise.toml` because that is the filename mise recognises in a project
-directory. Linking rather than copying means editing the repository edits the
-live configuration, and every `mise` command works from any directory.
-
-**4. Trust and apply**
-
-```bash
-mise trust ~/.config/mise/config.toml
-mise bootstrap --dry-run    # preview
-mise bootstrap            # apply
-```
-
-`mise bootstrap` prompts before mutating and uses `sudo` where a package or
-unit requires it.
-
-The Omarchy 4 profile is **not** installed here — it is opt-in. See
-[Machine profiles](#machine-profiles).
-
-### Updating the configuration later
-
-Edit `~/src/dotfiles/mise.toml`, then re-trust, because mise re-prompts when a
-configuration file changes:
-
-```bash
-mise trust ~/.config/mise/config.toml
+mise dot pull --take-remote-all
 mise bootstrap
 ```
 
-## Layout
-
-| Path | Purpose |
-| --- | --- |
-| `mise.toml` | the machine: tools, packages, environment, dotfiles, systemd units, tasks |
-| `mise.omarchy4.toml` | profile overlay for Omarchy 4 "quattro" |
-| `mise-tasks/` | file tasks for steps that stay imperative |
-| `MISE.md` | command reference for day-to-day use |
-| `.zshrc`, `.bashrc`, `.profile`, `.tigrc`, `.wezterm.lua`, `.config/` | a snapshot of the dotfiles, mirroring `$HOME` |
-
-The snapshot mirrors the home directory tree for convenience: it is a browsable
-reference and a way to seed a new machine. It is **not** what mise deploys.
-Under `mode = "track"` the live files in `$HOME` are the source of truth and
-mise history is authoritative — see the next section. If the two drift, the
-live files win.
-
-## How configuration is applied
-
-`mise bootstrap` converges the machine in ordered phases:
-
-```
-accounts → plugins → packages → files → services → firewall → compose
-         → repos → dotfiles → shell activation → platform defaults
-         → linux user units → user settings → tools → bootstrap task → final hook
-```
-
-Each phase is independently inspectable:
+**On an Omarchy 4 "quattro" machine**, select the profile before bootstrapping:
 
 ```bash
-mise bootstrap status                    # everything
-mise bootstrap packages status           # one phase
-mise bootstrap plan                      # the full declarative plan
-mise bootstrap --only dotfiles,tools     # a subset
-mise bootstrap --skip firewall          # everything except a subset
-```
-
-## How dotfiles work
-
-Dotfiles use `mode = "track"`. Each file stays exactly where it is — nothing is
-symlinked or copied — and mise records checkpoints of it into a local Git
-repository. The `history-watch` service saves edits automatically, so a
-configuration change made from any editor or agent is captured without a
-follow-up command.
-
-```bash
-mise dot history --path ~/.zshrc        # checkpoints for a file
-mise dot rollback ~/.zshrc --dry-run    # preview restoring the previous version
-mise dot rollback ~/.zshrc              # restore it
-mise dot undo                           # reverse the rollback
-```
-
-Because the live file is the real file, applications can write to it freely and
-there is no source tree that silently drifts out of date.
-
-### Tracking a new file
-
-```bash
-mise dot track ~/.config/foo/bar.toml
-```
-
-This adds the entry to the configuration and saves a baseline checkpoint.
-
-### Tracking a directory
-
-Check the size first. Home directories accumulate caches, session state, and
-logs that should not enter history:
-
-```bash
-mise dot track --dry-run ~/.config/somedir
-# ~/.config/somedir: 22,972 files, 1.2 GiB
-```
-
-Prefer tracking individual files, or add `exclude` patterns for the parts that
-are state rather than configuration:
-
-```toml
-[dotfiles]
-"~/.config/vifm" = { mode = "track", exclude = ["vifminfo.json"] }
-```
-
-### Stopping tracking
-
-```bash
-mise dot untrack ~/.config/foo/bar.toml    # stops capture; the file stays
-```
-
-### Seeding a new machine from the snapshot
-
-Without a shared history repository, copy the snapshot into place before
-starting to track:
-
-```bash
-cd ~/src/dotfiles
-cp .zshrc .bashrc .profile .tigrc .wezterm.lua ~/
-cp -a .config/. ~/.config/
+echo 'export MISE_ENV=omarchy4' >> ~/.zshrc
 mise bootstrap
 ```
 
-Prefer `mise bootstrap --adopt <repo>` when a shared history repository exists
-— it restores the tracked versions and handles conflicts properly.
+## Changing anything
 
-## Sharing
-
-History is local until a remote is connected:
+Edit `~/.config/mise/config.toml`, then:
 
 ```bash
-mise dot origin set <private-repo-url>
-```
-
-With `history.sync = "sync"` the watcher publishes saved changes and
-periodically fetches and applies changes made on other machines. Use
-`--sync manual` when connecting to keep checkpoints local until `mise dot sync`
-is run explicitly.
-
-**Use a private repository.** Synchronisation sends earlier checkpoints as
-well, so temporary edits can end up in shared history. Configure
-[encryption](https://mise.jdx.dev/history.html#encrypted-shared-files) before
-the first save of anything sensitive.
-
-Conflicts pause publication rather than inserting conflict markers into live
-files:
-
-```bash
-mise dot status
-mise dot pull --take-remote ~/.zshrc    # or --keep-local
-```
-
-Sync resumes once every conflict is resolved.
-
-## Machine profiles
-
-One configuration can describe several machines. This repository targets
-Omarchy 3.x by default; `mise.omarchy4.toml` overrides the Hyprland layer for
-Omarchy 4 "quattro", which is package-backed and configured in Lua.
-
-| | Omarchy 3.x | Omarchy 4 quattro |
-| --- | --- | --- |
-| entry | `hypr/hyprland.conf` | `hypr/hyprland.lua` |
-| defaults | `~/.local/share/omarchy/default/hypr/*.conf` | `/usr/share/omarchy/default/hypr/*.lua` |
-| API | `bind = SUPER, J, ...` | `o.bind("SUPER + J", ...)`, `hl.unbind(...)` |
-
-Select the profile on a quattro machine — two steps, because the overlay has to
-be installed under the name mise looks for, then activated:
-
-```bash
-# 1. install the overlay as the profile filename mise expects
-ln -s ~/src/dotfiles/mise.omarchy4.toml ~/.config/mise/config.omarchy4.toml
-
-# 2. activate the profile for this machine
-echo 'env = ["omarchy4"]' > ~/.config/mise/miserc.local.toml
-
 mise bootstrap
 ```
 
-For a single command without installing it permanently:
+Preview first if unsure: `mise bootstrap --dry-run`
+
+## Undo
 
 ```bash
-mise -E omarchy4 bootstrap
+mise dot history --path ~/.zshrc
+mise dot rollback ~/.zshrc
+mise dot undo
 ```
 
-On Omarchy 3.x neither step is needed — the base configuration already
-describes that machine.
-
-Profiles also work for work/personal splits, since any part of the
-configuration can be overridden in `mise.<env>.toml`.
-
-## Tasks
+## First machine only (nothing published yet)
 
 ```bash
-mise tasks ls
-mise run <task>
-mise run --force <task>
+sudo pacman -S --needed git mise
+install -d ~/.config/mise
+cp mise.toml          ~/.config/mise/config.toml
+cp mise.omarchy4.toml ~/.config/mise/config.omarchy4.toml
+cp -r mise-tasks      ~/.config/mise/tasks
+mise dot track ~/.config/mise/config.toml ~/.config/mise/config.omarchy4.toml ~/.config/mise/tasks
+mise bootstrap
+mise dot origin set https://github.com/<you>/dotfiles --sync sync
 ```
-
-| Task | Purpose |
-| --- | --- |
-| `zsh-setup` | install or update oh-my-zsh |
-| `omarchy-session` | run the omarchy-session upstream installer |
-| `displaylink` | DisplayLink dock setup; self-skips when no hardware is present |
-| `bootstrap` | runs `zsh-setup` and `omarchy-session`; executed automatically at the end of `mise bootstrap` |
-
-Tasks with `sources` and `outputs = { auto = true }` are skipped when nothing
-has changed and re-run when the task definition is edited.
-
-## Notes
-
-- **Version pins and rolling releases.** Arch ships only the newest build of
-  each package, so pinned `pacman:` / `aur:` entries are skipped with a
-  warning. Use `"latest"` and upgrade with `sudo pacman -Syu`;
-  `mise bootstrap packages upgrade` performs a partial upgrade, which Arch does
-  not support.
-- **Machine-specific files are deliberately excluded** from tracking:
-  `hypr/monitors.conf`, `git/config.local`, `vifm/vifminfo.json`,
-  `yazi/keymap.toml-*`. Create them per machine.
-- **Track narrowly.** A tracked directory captures everything under it. Use
-  `mise dot track --dry-run <dir>` before enrolling one.
-- **`mise bootstrap --yes` skips mise's prompts but does not supply sudo
-  credentials.**
-- **systemd unit keys.** `part_of`, `binds_to`, `before`, `conflicts`,
-  `exec_start_pre`, `exec_start_post`, and `exec_stop_post` are documented but
-  not implemented in every release, and `LogLevelMax` is unavailable. Check
-  `mise bootstrap linux systemd-units apply --dry-run` before relying on one.
-- **This surface moves quickly.** `mise bootstrap` and `[dotfiles]` became
-  stable in 2026.7.4 and the CLI has continued to consolidate. Pin a mise
-  version if the setup matters to you.
-
-## Further reading
-
-- [MISE.md](./MISE.md) — day-to-day command reference
-- [mise dotfiles](https://mise.jdx.dev/dotfiles.html)
-- [mise bootstrap](https://mise.jdx.dev/bootstrap.html)
-- [Setting up a machine](https://mise.jdx.dev/bootstrap/setup.html)
