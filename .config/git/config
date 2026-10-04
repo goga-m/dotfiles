@@ -5,6 +5,7 @@
     optional = true
 
 [core]
+	pager = hunk pager
 [alias]
 	co = checkout
 	br = branch

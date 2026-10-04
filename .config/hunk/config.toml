@@ -1,0 +1,66 @@
+theme = "dracula-nvim"
+
+mode = "auto"
+cursor_line = "row"
+sidebar = "auto"
+menu_bar = true
+
+line_numbers = true
+tab_width = 4
+wrap_lines = false
+hunk_headers = true
+color_moved = true
+
+watch = false
+exclude_untracked = false
+agent_notes = false
+copy_decorations = false
+prompt_save_view_preferences = false
+transparent_background = false
+
+[themes.dracula-nvim]
+base = "dracula"
+label = "Dracula nvim"
+
+background = "#282a36"
+contextBg = "#282a36"
+contextContentBg = "#282a36"
+lineNumberBg = "#282a36"
+
+panel = "#343746"
+panelAlt = "#2f323e"
+border = "#6272a4"
+selectedHunk = "#343746"
+
+text = "#f8f8f2"
+muted = "#8b95c4"
+accent = "#bd93f9"
+accentMuted = "#3a3d52"
+lineNumberFg = "#8b95c4"
+
+addedSignColor = "#50fa7b"
+removedSignColor = "#ff6e6e"
+addedBg = "#2c3f3d"
+removedBg = "#46303a"
+addedContentBg = "#2f4f42"
+removedContentBg = "#60353e"
+movedAddedBg = "#3a3530"
+movedRemovedBg = "#3a3530"
+
+badgeAdded = "#50fa7b"
+badgeRemoved = "#ff6e6e"
+badgeNeutral = "#8b95c4"
+fileNew = "#50fa7b"
+fileDeleted = "#ff5555"
+fileRenamed = "#bd93f9"
+fileModified = "#f1fa8c"
+fileUntracked = "#8be9fd"
+
+noteBorder = "#bd93f9"
+noteBackground = "#2f323e"
+noteTitleBackground = "#343746"
+noteTitleText = "#f8f8f2"
+
+[themes.dracula-nvim.syntax_scopes]
+"comment" = "#8b95c4"
+"punctuation.definition.comment" = "#8b95c4"

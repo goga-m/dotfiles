@@ -167,6 +167,9 @@ login_shell = "/usr/bin/zsh"
 # --- git -----------------------------------------------------------------
 "~/.config/git" = { source = ".config/git", mode = "copy" }
 
+# --- diff viewer ---------------------------------------------------------
+"~/.config/hunk/config.toml" = { source = ".config/hunk/config.toml", mode = "copy" }
+
 # --- prompt --------------------------------------------------------------
 "~/.config/starship.toml" = { source = ".config/starship.toml", mode = "copy" }
 
